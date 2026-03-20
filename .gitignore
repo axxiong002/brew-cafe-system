@@ -1,0 +1,26 @@
+# Build output
+bin/
+build/
+dist/
+out/
+target/
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.classpath
+*.project
+.settings/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Java archives and logs
+*.class
+*.jar
+*.log
+
+# Local JavaFX/runtime overrides
+*.env
