@@ -1,0 +1,22 @@
+{
+  "ingredients": [
+    {
+      "id": "ing-coffee-beans",
+      "name": "Coffee Beans",
+      "quantity": 5000,
+      "unit": "grams"
+    },
+    {
+      "id": "ing-milk",
+      "name": "Milk",
+      "quantity": 8000,
+      "unit": "ml"
+    },
+    {
+      "id": "ing-flour",
+      "name": "Flour",
+      "quantity": 12000,
+      "unit": "grams"
+    }
+  ]
+}

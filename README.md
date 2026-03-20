@@ -32,6 +32,32 @@ We are building a Java 21+ JavaFX application for a cafe with three roles:
 - Real-time UI updates for order and inventory changes
 - Persistence for catalog, inventory, users, and orders
 
+## Current Project Status
+
+- Maven-based JavaFX starter project is set up
+- The project compiles successfully with Maven
+- Maven wrapper files are included for easier team setup
+- Starter package layout exists for `controller`, `model`, `service`, `persistence`, and `view`
+- Role placeholder screens exist for customer, barista, and manager flows
+- Sample JSON seed files exist under `data/`
+- Early Factory Method and Observer pattern starter code has been added
+
+## Build And Run
+
+Use the Maven wrapper from the project root:
+
+```powershell
+.\mvnw.cmd compile
+.\mvnw.cmd javafx:run
+```
+
+If Maven is installed directly on your machine, you can also use:
+
+```powershell
+mvn compile
+mvn javafx:run
+```
+
 ## Team Structure
 
 - Project lead / GitHub coordinator
@@ -42,12 +68,15 @@ We are building a Java 21+ JavaFX application for a cafe with three roles:
 
 ## Immediate Next Steps
 
-1. Create a GitHub repository from this folder.
-2. Invite teammates and the instructor collaborator.
-3. Create a GitHub Project board using Kanban.
-4. Create issues for design, coding, testing, diagrams, and reflection work.
-5. Decide whether we will use Maven or Gradle.
-6. Draft wireframes and a high-level class model before coding heavily.
+1. Invite teammates and the instructor collaborator.
+2. Finish assigning major ownership areas across the team.
+3. Create issues for design, coding, testing, diagrams, and reflection work.
+4. Draft wireframes and a high-level class model before coding heavily.
+5. Start implementing role-specific workflows on top of the current starter structure.
+
+## Project Notes
+
+See `docs/project-notes.md` for a lightweight shared log of repo-level progress and setup changes.
 
 ## Instructor Collaboration Requirement
 

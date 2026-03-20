@@ -1,12 +1,48 @@
 # Initial Task Breakdown
 
+## Git Workflow
+
+- `main` should stay as the stable shared branch
+- Team members should create their own branches instead of committing directly to `main`
+- When work is ready, open a pull request into `main`
+- This helps keep the project organized, reduces conflicts, and makes contributions easier to track
+
+### Recommended Branch Naming
+
+- `andre/project-setup`
+- `riss/uml-docs`
+- `ameeeerr/customer-ui`
+- `name/barista-flow`
+- `name/inventory-management`
+
+### Basic Team Flow
+
+1. Pull the latest `main`
+2. Create a branch for your work
+3. Make your changes
+4. Commit your changes
+5. Push your branch
+6. Open a pull request into `main`
+
+### Example Git Commands
+
+```powershell
+git checkout main
+git pull origin main
+git checkout -b yourname/feature-name
+git add .
+git commit -m "Describe your changes"
+git push -u origin yourname/feature-name
+```
+
+After pushing, open a pull request on GitHub from your branch into `main`.
+
 ## Sprint 0
 
-- Create GitHub repository
 - Add team members and instructor collaborator
 - Create GitHub Project board
 - Create issue templates or initial backlog
-- Choose Maven or Gradle
+- Confirm Maven as the shared build tool
 - Agree on branch naming and pull request workflow
 
 ## Sprint 1: Analysis and Design
