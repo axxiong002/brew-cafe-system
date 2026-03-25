@@ -19,3 +19,19 @@ This file is the shared repo-level notes log for setup changes, progress updates
 - Added the first observer-pattern structure for future live updates
 - Added brief comments to key scaffold files so the code is easier to follow
 - Added the team Git branch and pull request workflow to `docs/task-breakdown.md`
+
+## March 24 2026
+
+- Clarified plit for the team:
+  - Andrew: code lead, architecture, integration, and likely manager/inventory direction
+  - Chee: customer workflow and customer UI
+  - Ameer: barista workflow, queue handling, and order status updates
+  - Riss: UML diagrams, wireframes, and documentation support
+- Broke out the first wireframes to work from:
+  - main landing / role selection
+  - customer ordering
+  - barista fulfillment
+  - manager dashboard
+  - barista login
+  - manager login
+- Next step is assigning GitHub issues and adding more specific implementation issues where needed
