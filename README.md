@@ -41,6 +41,9 @@ We are building a Java 21+ JavaFX application for a cafe with three roles:
 - Role placeholder screens exist for customer, barista, and manager flows
 - Sample JSON seed files exist under `data/`
 - Early Factory Method and Observer pattern starter code has been added
+- Shared application state now loads seeded users, menu items, and inventory on startup
+- Shared `AuthService`, `MenuService`, and `InventoryService` foundations are now in place for later role-specific UI work
+- Manager-side architecture now owns the central menu and inventory service layer the other role flows will use
 
 ## Build And Run
 
@@ -71,8 +74,8 @@ mvn javafx:run
 1. Invite teammates and the instructor collaborator.
 2. Finish assigning major ownership areas across the team.
 3. Create issues for design, coding, testing, diagrams, and reflection work.
-4. Draft wireframes and a high-level class model before coding heavily.
-5. Start implementing role-specific workflows on top of the current starter structure.
+4. Build the manager login and dashboard on top of the new shared auth/menu/inventory foundation.
+5. Let customer and barista role screens integrate against the shared service layer as those owners build their flows.
 
 ## Project Notes
 

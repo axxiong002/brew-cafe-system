@@ -35,3 +35,16 @@ This file is the shared repo-level notes log for setup changes, progress updates
   - barista login
   - manager login
 - Next step is assigning GitHub issues and adding more specific implementation issues where needed
+
+## April 7 2026
+
+- Reviewed the local assignment document and private project notes again before starting new implementation work
+- Created a dedicated working branch for Andrew's manager-side architecture work: `andre/manager-architecture`
+- Added a shared `User` / `UserRole` model and `AuthService` for manager and barista credential handling
+- Added `CafeApplicationState` so the JavaFX app now carries shared services instead of isolated starter state
+- Expanded JSON loading so seeded users, menu items, and inventory are loaded into model objects on startup
+- Added `IngredientUsage` support to the menu model for future inventory deduction rules
+- Added `MenuService` for menu listing and CRUD-oriented operations
+- Added `InventoryService` for inventory lookup, restocking, availability checks, and ingredient consumption support
+- Confirmed the project still compiles successfully after both manager-foundation phases
+- Current next step is building the manager login and dashboard on top of the new shared service layer
