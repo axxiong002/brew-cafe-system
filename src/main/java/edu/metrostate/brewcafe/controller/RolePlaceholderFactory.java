@@ -1,6 +1,7 @@
 package edu.metrostate.brewcafe.controller;
 
 import edu.metrostate.brewcafe.service.CafeApplicationState;
+import edu.metrostate.brewcafe.view.ManagerLoginView;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -62,13 +63,7 @@ public final class RolePlaceholderFactory {
     }
 
     public static Node createManagerPlaceholder(BorderPane rootLayout, CafeApplicationState applicationState) {
-        return createRoleScreen(
-                rootLayout,
-                applicationState,
-                "Manager Placeholder",
-                "This is where menu management, inventory tracking, and restocking tools will go.",
-                "Likely owner: manager / inventory workflow"
-        );
+        return new ManagerLoginView(rootLayout, applicationState).build();
     }
 
     private static Node createRoleScreen(

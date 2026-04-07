@@ -49,4 +49,12 @@ This file is the shared repo-level notes log for setup changes, progress updates
 - Added `MenuService` for menu list and manager-side add/edit/remove work
 - Added `InventoryService` for stock checks, restocking, and ingredient deduction support
 - Confirmed the project still compiles after these updates
-- Next step is building the manager login screen and the first version of the manager dashboard
+- Replaced the manager placeholder with a real manager login screen
+- Added a first manager dashboard with:
+- menu list
+- selected item details
+- add/remove item controls
+- inventory table
+- restock controls
+- Confirmed the project still compiles after the manager UI was added
+- Next step is expanding the manager dashboard and save/load behavior

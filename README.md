@@ -44,6 +44,7 @@ We are building a Java 21+ JavaFX application for a cafe with three roles:
 - Shared application state now loads seeded users, menu items, and inventory on startup
 - Shared `AuthService`, `MenuService`, and `InventoryService` foundations are now in place for later role-specific UI work
 - Manager-side architecture now owns the central menu and inventory service layer the other role flows will use
+- The manager button now opens a real manager login screen and first-pass dashboard instead of only a placeholder
 
 ## Build And Run
 
@@ -74,7 +75,7 @@ mvn javafx:run
 1. Invite teammates and the instructor collaborator.
 2. Finish assigning major ownership areas across the team.
 3. Create issues for design, coding, testing, diagrams, and reflection work.
-4. Build the manager login and dashboard on top of the new shared auth/menu/inventory foundation.
+4. Expand the manager dashboard with edit flows, richer validation, and persistence save-back support.
 5. Let customer and barista role screens integrate against the shared service layer as those owners build their flows.
 
 ## Project Notes
