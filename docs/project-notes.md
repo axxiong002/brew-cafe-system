@@ -22,29 +22,31 @@ This file is the shared repo-level notes log for setup changes, progress updates
 
 ## March 24 2026
 
-- Clarified plit for the team:
-  - Andrew: code lead, architecture, integration, and likely manager/inventory direction
-  - Chee: customer workflow and customer UI
-  - Ameer: barista workflow, queue handling, and order status updates
-  - Riss: UML diagrams, wireframes, and documentation support
-- Broke out the first wireframes to work from:
-  - main landing / role selection
-  - customer ordering
-  - barista fulfillment
-  - manager dashboard
-  - barista login
-  - manager login
-- Next step is assigning GitHub issues and adding more specific implementation issues where needed
+- Locked in the current working split a little more:
+- Andrew: code lead, integration, manager/inventory direction
+- Chee: customer side
+- Ameer: barista side
+- Riss: UML, wireframes, and docs support
+- Broke out the first wireframes we want to work from:
+- main landing / role selection
+- customer ordering
+- barista fulfillment
+- manager dashboard
+- barista login
+- manager login
+- Next step was assigning issues and making the tasks more specific
 
 ## April 7 2026
 
-- Reviewed the local assignment document and private project notes again before starting new implementation work
-- Created a dedicated working branch for Andrew's manager-side architecture work: `andre/manager-architecture`
-- Added a shared `User` / `UserRole` model and `AuthService` for manager and barista credential handling
-- Added `CafeApplicationState` so the JavaFX app now carries shared services instead of isolated starter state
-- Expanded JSON loading so seeded users, menu items, and inventory are loaded into model objects on startup
-- Added `IngredientUsage` support to the menu model for future inventory deduction rules
-- Added `MenuService` for menu listing and CRUD-oriented operations
-- Added `InventoryService` for inventory lookup, restocking, availability checks, and ingredient consumption support
-- Confirmed the project still compiles successfully after both manager-foundation phases
-- Current next step is building the manager login and dashboard on top of the new shared service layer
+- Started a new branch for Andrew's manager-side work: `andre/manager-architecture`
+- Added the shared user/auth setup for employee logins:
+- `User`
+- `UserRole`
+- `AuthService`
+- Added `CafeApplicationState` so the app shares the same service objects across the screens
+- Expanded JSON loading so users, menu items, and inventory load into the app at startup
+- Added `IngredientUsage` so menu items can be tied to inventory usage
+- Added `MenuService` for menu list and manager-side add/edit/remove work
+- Added `InventoryService` for stock checks, restocking, and ingredient deduction support
+- Confirmed the project still compiles after these updates
+- Next step is building the manager login screen and the first version of the manager dashboard
