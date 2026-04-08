@@ -1,32 +1,9 @@
 {
-  "beverages": [
-    {
-      "id": "bev-latte",
-      "name": "Latte",
-      "basePrice": 4.50,
-      "sizes": ["Small", "Medium", "Large"],
-      "customizations": ["Extra Shot", "Oat Milk", "Almond Milk"]
-    },
-    {
-      "id": "bev-green-tea",
-      "name": "Green Tea",
-      "basePrice": 3.25,
-      "sizes": ["Small", "Medium", "Large"],
-      "customizations": ["Sugar-Free Syrup", "Honey"]
-    }
-  ],
-  "pastries": [
-    {
-      "id": "pas-butter-croissant",
-      "name": "Croissant",
-      "variation": "Butter",
-      "basePrice": 3.15
-    },
-    {
-      "id": "pas-blueberry-muffin",
-      "name": "Muffin",
-      "variation": "Blueberry",
-      "basePrice": 3.45
-    }
-  ]
+  "beverages" : [ ],
+  "pastries" : [ {
+    "id" : "pas-blueberry-pastry-1775608816539",
+    "name" : "Blueberry Pastry",
+    "variation" : "Standard",
+    "basePrice" : 12.95
+  } ]
 }

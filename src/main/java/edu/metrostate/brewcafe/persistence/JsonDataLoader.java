@@ -1,6 +1,7 @@
 package edu.metrostate.brewcafe.persistence;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import edu.metrostate.brewcafe.model.Beverage;
 import edu.metrostate.brewcafe.model.Customization;
 import edu.metrostate.brewcafe.model.Ingredient;
@@ -18,7 +19,7 @@ import java.util.List;
 
 // Simple file loader placeholder for moving JSON read logic out of the UI layer.
 public class JsonDataLoader {
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
     private final MenuItemFactory menuItemFactory = new MenuItemFactory();
 
     public String loadJson(Path path) throws IOException {
@@ -68,6 +69,44 @@ public class JsonDataLoader {
     public List<Ingredient> loadIngredients(Path path) throws IOException {
         IngredientsData ingredientsData = objectMapper.readValue(path.toFile(), IngredientsData.class);
         return ingredientsData.ingredients();
+    }
+
+    public void saveMenuItems(Path path, List<MenuItem> menuItems) throws IOException {
+        List<BeverageData> beverages = new ArrayList<>();
+        List<PastryData> pastries = new ArrayList<>();
+
+        for (MenuItem menuItem : menuItems) {
+            if (menuItem instanceof Beverage beverage) {
+                List<String> sizes = beverage.getSizes().stream()
+                        .map(SizeOption::name)
+                        .toList();
+
+                List<String> customizations = beverage.getCustomizations().stream()
+                        .map(Customization::name)
+                        .toList();
+
+                beverages.add(new BeverageData(
+                        beverage.getId(),
+                        beverage.getName(),
+                        beverage.getBasePrice(),
+                        sizes,
+                        customizations
+                ));
+            } else if (menuItem instanceof Pastry pastry) {
+                pastries.add(new PastryData(
+                        pastry.getId(),
+                        pastry.getName(),
+                        pastry.getVariation(),
+                        pastry.getBasePrice()
+                ));
+            }
+        }
+
+        objectMapper.writeValue(path.toFile(), new MenuData(beverages, pastries));
+    }
+
+    public void saveIngredients(Path path, List<Ingredient> ingredients) throws IOException {
+        objectMapper.writeValue(path.toFile(), new IngredientsData(ingredients));
     }
 
     private record UsersData(List<User> users) {

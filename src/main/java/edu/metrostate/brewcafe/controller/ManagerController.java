@@ -15,6 +15,8 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 
+import java.io.IOException;
+
 // Handles manager login, manager navigation, and manager-owned menu/inventory actions.
 public class ManagerController {
     private final BorderPane rootLayout;
@@ -99,8 +101,16 @@ public class ManagerController {
         }
 
         applicationState.getMenuService().addMenuItem(menuItem);
+        try {
+            applicationState.saveMenuData();
+        } catch (IOException exception) {
+            statusLabel.setText("Menu updated, but saving to JSON failed.");
+            refreshMenuItems(menuItems);
+            return;
+        }
+
         refreshMenuItems(menuItems);
-        statusLabel.setText(itemType + " added to the menu.");
+        statusLabel.setText(itemType + " added and saved.");
     }
 
     public void removeMenuItem(MenuItem selectedMenuItem, ObservableList<MenuItem> menuItems, Label statusLabel) {
@@ -115,8 +125,16 @@ public class ManagerController {
             return;
         }
 
+        try {
+            applicationState.saveMenuData();
+        } catch (IOException exception) {
+            statusLabel.setText("Menu updated, but saving to JSON failed.");
+            refreshMenuItems(menuItems);
+            return;
+        }
+
         refreshMenuItems(menuItems);
-        statusLabel.setText("Removed " + selectedMenuItem.getName() + " from the menu.");
+        statusLabel.setText("Removed " + selectedMenuItem.getName() + " and saved the menu.");
     }
 
     public void restockIngredient(
@@ -151,8 +169,16 @@ public class ManagerController {
             return;
         }
 
+        try {
+            applicationState.saveInventoryData();
+        } catch (IOException exception) {
+            statusLabel.setText("Inventory updated, but saving to JSON failed.");
+            refreshIngredients(ingredients);
+            return;
+        }
+
         refreshIngredients(ingredients);
-        statusLabel.setText("Restocked " + selectedIngredient.getName() + ".");
+        statusLabel.setText("Restocked " + selectedIngredient.getName() + " and saved inventory.");
     }
 
     public void refreshMenuItems(ObservableList<MenuItem> menuItems) {
