@@ -37,5 +37,5 @@ This file is the shared repo-level notes log for setup changes, progress updates
 - Next step is assigning GitHub issues and adding more specific implementation issues where needed
 
 ## April 14 2026
--UML Use Case Diagram
--Class Diagrams- STARTED WILL HAVE QUESTIONS
+- UML Use Case Diagram
+- Class Diagrams (STARTED WILL HAVE QUESTIONS)
