@@ -22,19 +22,19 @@ This file is the shared repo-level notes log for setup changes, progress updates
 
 ## March 24 2026
 
-- Locked in the current working split a little more:
-- Andrew: code lead, integration, manager/inventory direction
-- Chee: customer side
-- Ameer: barista side
-- Riss: UML, wireframes, and docs support
-- Broke out the first wireframes we want to work from:
-- main landing / role selection
-- customer ordering
-- barista fulfillment
-- manager dashboard
-- barista login
-- manager login
-- Next step was assigning issues and making the tasks more specific
+- Clarified the working split for the team:
+  - Andrew: code lead, architecture, integration, and manager/inventory direction
+  - Chee: customer workflow and customer UI
+  - Ameer: barista workflow, queue handling, and order status updates
+  - Riss: UML diagrams, wireframes, and documentation support
+- Broke out the first wireframes to work from:
+  - main landing / role selection
+  - customer ordering
+  - barista fulfillment
+  - manager dashboard
+  - barista login
+  - manager login
+- Next step is assigning GitHub issues and adding more specific implementation issues where needed
 
 ## April 7 2026
 
@@ -58,3 +58,8 @@ This file is the shared repo-level notes log for setup changes, progress updates
 - restock controls
 - Confirmed the project still compiles after the manager UI was added
 - Next step is expanding the manager dashboard and save/load behavior
+
+## April 14 2026
+
+- UML Use Case Diagram
+- Class Diagrams (STARTED WILL HAVE QUESTIONS)
