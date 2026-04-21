@@ -63,3 +63,13 @@ This file is the shared repo-level notes log for setup changes, progress updates
 
 - UML Use Case Diagram
 - Class Diagrams (STARTED WILL HAVE QUESTIONS)
+
+## April 21 2026
+
+- Merged the latest `main` changes into `andre/manager-architecture`, including the use case diagram files.
+- Added manager menu item editing on the manager dashboard:
+  - selecting a menu item now fills editable fields
+  - managers can update the selected item's name and base price
+  - pastry variations can also be edited
+  - successful edits save back to `data/menu.json`
+- Confirmed the project still compiles with the Maven wrapper after the manager edit changes.

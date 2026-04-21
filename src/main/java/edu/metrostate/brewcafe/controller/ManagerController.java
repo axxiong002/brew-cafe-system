@@ -137,6 +137,62 @@ public class ManagerController {
         statusLabel.setText("Removed " + selectedMenuItem.getName() + " and saved the menu.");
     }
 
+    public void updateMenuItem(
+            MenuItem selectedMenuItem,
+            String name,
+            String basePriceValue,
+            String variation,
+            ObservableList<MenuItem> menuItems,
+            Label statusLabel
+    ) {
+        if (selectedMenuItem == null) {
+            statusLabel.setText("Select a menu item to edit.");
+            return;
+        }
+
+        if (name == null || name.isBlank() || basePriceValue == null || basePriceValue.isBlank()) {
+            statusLabel.setText("Name and base price are required for edits.");
+            return;
+        }
+
+        double basePrice;
+        try {
+            basePrice = Double.parseDouble(basePriceValue.trim());
+        } catch (NumberFormatException exception) {
+            statusLabel.setText("Base price must be a number.");
+            return;
+        }
+
+        if (basePrice < 0) {
+            statusLabel.setText("Base price must be 0 or higher.");
+            return;
+        }
+
+        selectedMenuItem.setName(name.trim());
+        selectedMenuItem.setBasePrice(basePrice);
+        if (selectedMenuItem instanceof Pastry pastry) {
+            String pastryVariation = variation == null || variation.isBlank() ? "Standard" : variation.trim();
+            pastry.setVariation(pastryVariation);
+        }
+
+        boolean updated = applicationState.getMenuService().updateMenuItem(selectedMenuItem);
+        if (!updated) {
+            statusLabel.setText("Unable to update the selected menu item.");
+            return;
+        }
+
+        try {
+            applicationState.saveMenuData();
+        } catch (IOException exception) {
+            statusLabel.setText("Menu updated, but saving to JSON failed.");
+            refreshMenuItems(menuItems);
+            return;
+        }
+
+        refreshMenuItems(menuItems);
+        statusLabel.setText("Updated " + selectedMenuItem.getName() + " and saved the menu.");
+    }
+
     public void restockIngredient(
             Ingredient selectedIngredient,
             String quantityValue,

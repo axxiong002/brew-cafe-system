@@ -82,12 +82,34 @@ public class ManagerDashboardView {
         Label selectedPriceLabel = new Label("Base Price: -");
         Label selectedAvailabilityLabel = new Label("Available: -");
 
+        TextField editNameField = new TextField();
+        editNameField.setPromptText("Selected item name");
+        editNameField.setDisable(true);
+
+        TextField editBasePriceField = new TextField();
+        editBasePriceField.setPromptText("Selected base price");
+        editBasePriceField.setDisable(true);
+
+        TextField editVariationField = new TextField();
+        editVariationField.setPromptText("Selected pastry variation");
+        editVariationField.setDisable(true);
+
+        Button saveSelectedButton = new Button("Save Selected Edits");
+        saveSelectedButton.setDisable(true);
+
         menuListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == null) {
                 selectedNameLabel.setText("Name: No item selected");
                 selectedTypeLabel.setText("Type: -");
                 selectedPriceLabel.setText("Base Price: -");
                 selectedAvailabilityLabel.setText("Available: -");
+                editNameField.clear();
+                editBasePriceField.clear();
+                editVariationField.clear();
+                editNameField.setDisable(true);
+                editBasePriceField.setDisable(true);
+                editVariationField.setDisable(true);
+                saveSelectedButton.setDisable(true);
                 return;
             }
 
@@ -96,6 +118,19 @@ public class ManagerDashboardView {
             selectedPriceLabel.setText("Base Price: $" + String.format("%.2f", newValue.getBasePrice()));
             boolean available = applicationState.getInventoryService().isAvailable(newValue);
             selectedAvailabilityLabel.setText("Available: " + (available ? "Yes" : "No"));
+            editNameField.setText(newValue.getName());
+            editBasePriceField.setText(String.format("%.2f", newValue.getBasePrice()));
+            editNameField.setDisable(false);
+            editBasePriceField.setDisable(false);
+            saveSelectedButton.setDisable(false);
+
+            if (newValue instanceof Pastry pastry) {
+                editVariationField.setText(pastry.getVariation());
+                editVariationField.setDisable(false);
+            } else {
+                editVariationField.clear();
+                editVariationField.setDisable(true);
+            }
         });
 
         ChoiceBox<String> itemTypeChoice = new ChoiceBox<>(FXCollections.observableArrayList("Beverage", "Pastry"));
@@ -154,6 +189,17 @@ public class ManagerDashboardView {
                 controller.removeMenuItem(menuListView.getSelectionModel().getSelectedItem(), menuItems, statusLabel)
         );
 
+        saveSelectedButton.setOnAction(event ->
+                controller.updateMenuItem(
+                        menuListView.getSelectionModel().getSelectedItem(),
+                        editNameField.getText(),
+                        editBasePriceField.getText(),
+                        editVariationField.getText(),
+                        menuItems,
+                        statusLabel
+                )
+        );
+
         Button restockButton = new Button("Restock Selected");
         restockButton.setOnAction(event -> {
             controller.restockIngredient(
@@ -179,7 +225,12 @@ public class ManagerDashboardView {
                 itemNameField,
                 basePriceField,
                 variationField,
-                new HBox(10, addItemButton, removeItemButton)
+                addItemButton,
+                new Label("Edit Selected Item"),
+                editNameField,
+                editBasePriceField,
+                editVariationField,
+                new HBox(10, saveSelectedButton, removeItemButton)
         );
         menuSection.setPadding(new Insets(18));
         menuSection.setStyle("-fx-background-color: rgba(255,255,255,0.7); -fx-background-radius: 12;");
