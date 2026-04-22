@@ -1,5 +1,7 @@
 package edu.metrostate.brewcafe.controller;
 
+import edu.metrostate.brewcafe.service.CafeApplicationState;
+import edu.metrostate.brewcafe.view.ManagerLoginView;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -13,8 +15,8 @@ public final class RolePlaceholderFactory {
     private RolePlaceholderFactory() {
     }
 
-    public static Node createHomePlaceholder(BorderPane rootLayout) {
-        MainMenuController controller = new MainMenuController(rootLayout);
+    public static Node createHomePlaceholder(BorderPane rootLayout, CafeApplicationState applicationState) {
+        MainMenuController controller = new MainMenuController(rootLayout, applicationState);
 
         Label titleLabel = new Label("Brew Cafe System");
         titleLabel.setStyle("-fx-font-size: 28px; -fx-font-weight: bold;");
@@ -40,35 +42,38 @@ public final class RolePlaceholderFactory {
         return content;
     }
 
-    public static Node createCustomerPlaceholder(BorderPane rootLayout) {
+    public static Node createCustomerPlaceholder(BorderPane rootLayout, CafeApplicationState applicationState) {
         return createRoleScreen(
                 rootLayout,
+                applicationState,
                 "Customer Placeholder",
                 "This is where customer ordering, item selection, and order building will go.",
                 "Likely owner: customer UI / ordering workflow"
         );
     }
 
-    public static Node createBaristaPlaceholder(BorderPane rootLayout) {
+    public static Node createBaristaPlaceholder(BorderPane rootLayout, CafeApplicationState applicationState) {
         return createRoleScreen(
                 rootLayout,
+                applicationState,
                 "Barista Placeholder",
                 "This is where the FIFO order queue, status updates, and fulfillment flow will go.",
                 "Likely owner: barista workflow"
         );
     }
 
-    public static Node createManagerPlaceholder(BorderPane rootLayout) {
-        return createRoleScreen(
-                rootLayout,
-                "Manager Placeholder",
-                "This is where menu management, inventory tracking, and restocking tools will go.",
-                "Likely owner: manager / inventory workflow"
-        );
+    public static Node createManagerPlaceholder(BorderPane rootLayout, CafeApplicationState applicationState) {
+        return new ManagerLoginView(rootLayout, applicationState).build();
     }
 
-    private static Node createRoleScreen(BorderPane rootLayout, String title, String summary, String ownerHint) {
-        MainMenuController controller = new MainMenuController(rootLayout);
+    private static Node createRoleScreen(
+            BorderPane rootLayout,
+            CafeApplicationState applicationState,
+            String title,
+            String summary,
+            String ownerHint
+    ) {
+        MainMenuController controller = new MainMenuController(rootLayout, applicationState);
 
         Label titleLabel = new Label(title);
         titleLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");

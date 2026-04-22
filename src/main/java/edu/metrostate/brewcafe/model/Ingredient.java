@@ -2,10 +2,13 @@ package edu.metrostate.brewcafe.model;
 
 // Represents an inventory item that can be consumed or restocked.
 public class Ingredient {
-    private final String id;
+    private String id;
     private String name;
     private double quantity;
     private String unit;
+
+    public Ingredient() {
+    }
 
     public Ingredient(String id, String name, double quantity, String unit) {
         this.id = id;
@@ -32,6 +35,10 @@ public class Ingredient {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public void setQuantity(double quantity) {
