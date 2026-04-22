@@ -43,6 +43,21 @@ public class InventoryService extends AbstractCafeSubject {
         return true;
     }
 
+    public boolean setIngredientQuantity(String ingredientId, double quantity) {
+        if (quantity < 0) {
+            return false;
+        }
+
+        Optional<Ingredient> ingredient = getIngredientById(ingredientId);
+        if (ingredient.isEmpty()) {
+            return false;
+        }
+
+        ingredient.get().setQuantity(quantity);
+        notifyObservers("inventory-quantity-updated");
+        return true;
+    }
+
     public boolean isAvailable(MenuItem menuItem) {
         for (IngredientUsage usage : menuItem.getIngredientUsages()) {
             Optional<Ingredient> ingredient = getIngredientById(usage.ingredientId());

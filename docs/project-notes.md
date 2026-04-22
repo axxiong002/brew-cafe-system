@@ -73,3 +73,13 @@ This file is the shared repo-level notes log for setup changes, progress updates
   - pastry variations can also be edited
   - successful edits save back to `data/menu.json`
 - Confirmed the project still compiles with the Maven wrapper after the manager edit changes.
+- Expanded the local manager/data foundation further:
+  - beverage size price adjustments can be edited from the manager dashboard
+  - beverage customization costs can be edited from the manager dashboard
+  - menu item ingredient usage can be edited with inventory ingredient IDs
+  - seed menu JSON now preserves size prices, customization prices, and ingredient usage
+  - inventory seed data now includes the core ingredients used by the menu
+  - pending and fulfilled order queues now load/save through `data/orders.json`
+- Reviewed teammate branch diffs before integration:
+  - `customer-flow` has useful customer service/model work, but some Java/FXML files are currently outside the Maven package structure
+  - `ameer/barista-flow` appears behind the current shared scaffold and should be updated before integration

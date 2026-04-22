@@ -3,6 +3,7 @@ package edu.metrostate.brewcafe.controller;
 import edu.metrostate.brewcafe.model.Beverage;
 import edu.metrostate.brewcafe.model.Customization;
 import edu.metrostate.brewcafe.model.Ingredient;
+import edu.metrostate.brewcafe.model.IngredientUsage;
 import edu.metrostate.brewcafe.model.MenuItem;
 import edu.metrostate.brewcafe.model.Pastry;
 import edu.metrostate.brewcafe.model.SizeOption;
@@ -16,6 +17,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 // Handles manager login, manager navigation, and manager-owned menu/inventory actions.
 public class ManagerController {
@@ -142,6 +145,9 @@ public class ManagerController {
             String name,
             String basePriceValue,
             String variation,
+            String sizesValue,
+            String customizationsValue,
+            String ingredientUsagesValue,
             ObservableList<MenuItem> menuItems,
             Label statusLabel
     ) {
@@ -170,6 +176,25 @@ public class ManagerController {
 
         selectedMenuItem.setName(name.trim());
         selectedMenuItem.setBasePrice(basePrice);
+        List<IngredientUsage> ingredientUsages;
+        try {
+            ingredientUsages = parseIngredientUsages(ingredientUsagesValue);
+        } catch (IllegalArgumentException exception) {
+            statusLabel.setText(exception.getMessage());
+            return;
+        }
+        selectedMenuItem.setIngredientUsages(ingredientUsages);
+
+        if (selectedMenuItem instanceof Beverage beverage) {
+            try {
+                beverage.setSizes(parseSizeOptions(sizesValue));
+                beverage.setCustomizations(parseCustomizations(customizationsValue));
+            } catch (IllegalArgumentException exception) {
+                statusLabel.setText(exception.getMessage());
+                return;
+            }
+        }
+
         if (selectedMenuItem instanceof Pastry pastry) {
             String pastryVariation = variation == null || variation.isBlank() ? "Standard" : variation.trim();
             pastry.setVariation(pastryVariation);
@@ -237,6 +262,50 @@ public class ManagerController {
         statusLabel.setText("Restocked " + selectedIngredient.getName() + " and saved inventory.");
     }
 
+    public void setIngredientQuantity(
+            Ingredient selectedIngredient,
+            String quantityValue,
+            ObservableList<Ingredient> ingredients,
+            Label statusLabel
+    ) {
+        if (selectedIngredient == null) {
+            statusLabel.setText("Select an ingredient to edit.");
+            return;
+        }
+
+        if (quantityValue == null || quantityValue.isBlank()) {
+            statusLabel.setText("Enter the new inventory quantity.");
+            return;
+        }
+
+        double newQuantity;
+        try {
+            newQuantity = Double.parseDouble(quantityValue.trim());
+        } catch (NumberFormatException exception) {
+            statusLabel.setText("Inventory quantity must be a number.");
+            return;
+        }
+
+        boolean updated = applicationState.getInventoryService()
+                .setIngredientQuantity(selectedIngredient.getId(), newQuantity);
+
+        if (!updated) {
+            statusLabel.setText("Inventory quantity must be 0 or higher.");
+            return;
+        }
+
+        try {
+            applicationState.saveInventoryData();
+        } catch (IOException exception) {
+            statusLabel.setText("Inventory updated, but saving to JSON failed.");
+            refreshIngredients(ingredients);
+            return;
+        }
+
+        refreshIngredients(ingredients);
+        statusLabel.setText("Set " + selectedIngredient.getName() + " quantity to " + String.format("%.2f", newQuantity) + ".");
+    }
+
     public void refreshMenuItems(ObservableList<MenuItem> menuItems) {
         menuItems.setAll(applicationState.getMenuService().getAllMenuItems());
     }
@@ -249,5 +318,81 @@ public class ManagerController {
         String prefix = "Beverage".equals(itemType) ? "bev" : "pas";
         String normalizedName = name.trim().toLowerCase().replaceAll("[^a-z0-9]+", "-").replaceAll("(^-|-$)", "");
         return prefix + "-" + normalizedName + "-" + System.currentTimeMillis();
+    }
+
+    private List<SizeOption> parseSizeOptions(String sizesValue) {
+        List<SizeOption> sizes = new ArrayList<>();
+        for (String entry : splitCsvEntries(sizesValue)) {
+            String[] parts = entry.split(":", 2);
+            if (parts.length != 2 || parts[0].isBlank()) {
+                throw new IllegalArgumentException("Use size format like Small:0, Medium:0.75.");
+            }
+            sizes.add(new SizeOption(parts[0].trim(), parseNonNegativeDouble(parts[1], "Size price adjustment")));
+        }
+
+        if (sizes.isEmpty()) {
+            throw new IllegalArgumentException("Beverages need at least one size.");
+        }
+
+        return sizes;
+    }
+
+    private List<Customization> parseCustomizations(String customizationsValue) {
+        List<Customization> customizations = new ArrayList<>();
+        for (String entry : splitCsvEntries(customizationsValue)) {
+            String[] parts = entry.split(":", 2);
+            if (parts.length != 2 || parts[0].isBlank()) {
+                throw new IllegalArgumentException("Use customization format like Extra Shot:0.75, Oat Milk:0.65.");
+            }
+            customizations.add(new Customization(parts[0].trim(), parseNonNegativeDouble(parts[1], "Customization price")));
+        }
+        return customizations;
+    }
+
+    private List<IngredientUsage> parseIngredientUsages(String ingredientUsagesValue) {
+        List<IngredientUsage> usages = new ArrayList<>();
+        for (String entry : splitCsvEntries(ingredientUsagesValue)) {
+            String[] parts = entry.split(":", 2);
+            if (parts.length != 2 || parts[0].isBlank()) {
+                throw new IllegalArgumentException("Use ingredient format like ing-milk:180, ing-coffee-beans:18.");
+            }
+
+            String ingredientId = parts[0].trim();
+            if (applicationState.getInventoryService().getIngredientById(ingredientId).isEmpty()) {
+                throw new IllegalArgumentException("Unknown ingredient id: " + ingredientId);
+            }
+
+            usages.add(new IngredientUsage(
+                    ingredientId,
+                    parseNonNegativeDouble(parts[1], "Ingredient quantity")
+            ));
+        }
+        return usages;
+    }
+
+    private List<String> splitCsvEntries(String value) {
+        if (value == null || value.isBlank()) {
+            return List.of();
+        }
+
+        List<String> entries = new ArrayList<>();
+        for (String entry : value.split(",")) {
+            if (!entry.isBlank()) {
+                entries.add(entry.trim());
+            }
+        }
+        return entries;
+    }
+
+    private double parseNonNegativeDouble(String value, String fieldName) {
+        try {
+            double parsed = Double.parseDouble(value.trim());
+            if (parsed < 0) {
+                throw new IllegalArgumentException(fieldName + " must be 0 or higher.");
+            }
+            return parsed;
+        } catch (NumberFormatException exception) {
+            throw new IllegalArgumentException(fieldName + " must be a number.");
+        }
     }
 }

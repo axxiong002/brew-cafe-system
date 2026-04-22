@@ -1,9 +1,96 @@
 {
-  "beverages" : [ ],
+  "beverages" : [ {
+    "id" : "bev-latte",
+    "name" : "Latte",
+    "basePrice" : 4.5,
+    "sizes" : [ {
+      "name" : "Small",
+      "priceAdjustment" : 0.0
+    }, {
+      "name" : "Medium",
+      "priceAdjustment" : 0.75
+    }, {
+      "name" : "Large",
+      "priceAdjustment" : 1.5
+    } ],
+    "customizations" : [ {
+      "name" : "Extra Shot",
+      "extraCost" : 0.75
+    }, {
+      "name" : "Oat Milk",
+      "extraCost" : 0.65
+    }, {
+      "name" : "Almond Milk",
+      "extraCost" : 0.65
+    } ],
+    "ingredientUsages" : [ {
+      "ingredientId" : "ing-coffee-beans",
+      "quantityRequired" : 18.0
+    }, {
+      "ingredientId" : "ing-milk",
+      "quantityRequired" : 180.0
+    } ]
+  }, {
+    "id" : "bev-green-tea",
+    "name" : "Green Tea",
+    "basePrice" : 3.25,
+    "sizes" : [ {
+      "name" : "Small",
+      "priceAdjustment" : 0.0
+    }, {
+      "name" : "Medium",
+      "priceAdjustment" : 0.5
+    }, {
+      "name" : "Large",
+      "priceAdjustment" : 1.0
+    } ],
+    "customizations" : [ {
+      "name" : "Honey",
+      "extraCost" : 0.4
+    }, {
+      "name" : "Sugar-Free Syrup",
+      "extraCost" : 0.5
+    } ],
+    "ingredientUsages" : [ {
+      "ingredientId" : "ing-sugar",
+      "quantityRequired" : 8.0
+    } ]
+  } ],
   "pastries" : [ {
-    "id" : "pas-blueberry-pastry-1775608816539",
-    "name" : "Blueberry Pastry",
-    "variation" : "Standard",
-    "basePrice" : 12.95
+    "id" : "pas-butter-croissant",
+    "name" : "Croissant",
+    "variation" : "Butter",
+    "basePrice" : 3.15,
+    "ingredientUsages" : [ {
+      "ingredientId" : "ing-flour",
+      "quantityRequired" : 90.0
+    }, {
+      "ingredientId" : "ing-butter",
+      "quantityRequired" : 35.0
+    } ]
+  }, {
+    "id" : "pas-blueberry-muffin",
+    "name" : "Muffin",
+    "variation" : "Blueberry",
+    "basePrice" : 3.45,
+    "ingredientUsages" : [ {
+      "ingredientId" : "ing-flour",
+      "quantityRequired" : 80.0
+    }, {
+      "ingredientId" : "ing-sugar",
+      "quantityRequired" : 25.0
+    } ]
+  }, {
+    "id" : "pas-chocolate-cookie",
+    "name" : "Cookie",
+    "variation" : "Chocolate Chip",
+    "basePrice" : 2.65,
+    "ingredientUsages" : [ {
+      "ingredientId" : "ing-flour",
+      "quantityRequired" : 45.0
+    }, {
+      "ingredientId" : "ing-chocolate-chips",
+      "quantityRequired" : 20.0
+    } ]
   } ]
 }

@@ -11,9 +11,11 @@ import java.io.IOException;
 // Main JavaFX entry point for the project starter.
 // This launches the shared landing screen the team can build out by role.
 public class BrewCafeApplication extends Application {
+    private CafeApplicationState applicationState;
+
     @Override
     public void start(Stage primaryStage) {
-        CafeApplicationState applicationState = createApplicationState();
+        applicationState = createApplicationState();
 
         // This is the single JavaFX entry point for the project starter.
         MainMenuView mainMenuView = new MainMenuView(applicationState);
@@ -24,6 +26,14 @@ public class BrewCafeApplication extends Application {
         primaryStage.setMinWidth(900);
         primaryStage.setMinHeight(600);
         primaryStage.show();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        if (applicationState != null) {
+            applicationState.saveAllData();
+        }
+        super.stop();
     }
 
     public static void main(String[] args) {

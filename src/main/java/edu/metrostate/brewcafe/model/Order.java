@@ -1,6 +1,7 @@
 package edu.metrostate.brewcafe.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 // Basic order model for customer info, ordered items, and fulfillment status.
@@ -25,7 +26,7 @@ public class Order {
     }
 
     public List<OrderItem> getItems() {
-        return items;
+        return Collections.unmodifiableList(items);
     }
 
     public OrderStatus getStatus() {
@@ -34,5 +35,19 @@ public class Order {
 
     public void setStatus(OrderStatus status) {
         this.status = status;
+    }
+
+    public void addItem(OrderItem item) {
+        if (item != null) {
+            items.add(item);
+        }
+    }
+
+    public void removeItem(OrderItem item) {
+        items.remove(item);
+    }
+
+    public void clearItems() {
+        items.clear();
     }
 }
