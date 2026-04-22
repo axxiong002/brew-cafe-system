@@ -1,5 +1,6 @@
 package edu.metrostate.brewcafe.controller;
 
+import edu.metrostate.brewcafe.view.BaristaLoginView;
 import javafx.scene.layout.BorderPane;
 
 // Controls the starter navigation between the home screen and each role placeholder.
@@ -15,7 +16,8 @@ public class MainMenuController {
     }
 
     public void showBaristaScreen() {
-        rootLayout.setCenter(RolePlaceholderFactory.createBaristaPlaceholder(rootLayout));
+        BaristaLoginView loginView = new BaristaLoginView(rootLayout);
+        rootLayout.setCenter(loginView.build());
     }
 
     public void showManagerScreen() {
