@@ -141,10 +141,8 @@ public class CustomerController {
     }
 
     public void placeCurrentOrder(ObservableList<OrderItem> currentOrderItems, Label totalLabel, Label statusLabel,
-    								TextField customerNameField,
-    								ListView<MenuItem> menuListView,
-    								ComboBox<SizeOption> sizeComboBox,
-    								Spinner<Integer> quantitySpinner) {
+    								TextField customerNameField, ListView<MenuItem> menuListView,
+    								ComboBox<SizeOption> sizeComboBox, Spinner<Integer> quantitySpinner) {
         try {
             Order placedOrder = customerOrderService.placeCurrentOrder();
 
