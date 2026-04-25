@@ -43,13 +43,7 @@ public final class RolePlaceholderFactory {
     }
 
     public static Node createCustomerPlaceholder(BorderPane rootLayout, CafeApplicationState applicationState) {
-        return createRoleScreen(
-                rootLayout,
-                applicationState,
-                "Customer Placeholder",
-                "This is where customer ordering, item selection, and order building will go.",
-                "Likely owner: customer UI / ordering workflow"
-        );
+        return new CustomerDashboardView(rootLayout, applicationState).build();
     }
 
     public static Node createBaristaPlaceholder(BorderPane rootLayout, CafeApplicationState applicationState) {
