@@ -22,8 +22,8 @@ This file is the shared repo-level notes log for setup changes, progress updates
 
 ## March 24 2026
 
-- Clarified plit for the team:
-  - Andrew: code lead, architecture, integration, and likely manager/inventory direction
+- Clarified the working split for the team:
+  - Andrew: code lead, architecture, integration, and manager/inventory direction
   - Chee: customer workflow and customer UI
   - Ameer: barista workflow, queue handling, and order status updates
   - Riss: UML diagrams, wireframes, and documentation support
@@ -36,6 +36,50 @@ This file is the shared repo-level notes log for setup changes, progress updates
   - manager login
 - Next step is assigning GitHub issues and adding more specific implementation issues where needed
 
+## April 7 2026
+
+- Started a new branch for Andrew's manager-side work: `andre/manager-architecture`
+- Added the shared user/auth setup for employee logins:
+- `User`
+- `UserRole`
+- `AuthService`
+- Added `CafeApplicationState` so the app shares the same service objects across the screens
+- Expanded JSON loading so users, menu items, and inventory load into the app at startup
+- Added `IngredientUsage` so menu items can be tied to inventory usage
+- Added `MenuService` for menu list and manager-side add/edit/remove work
+- Added `InventoryService` for stock checks, restocking, and ingredient deduction support
+- Confirmed the project still compiles after these updates
+- Replaced the manager placeholder with a real manager login screen
+- Added a first manager dashboard with:
+- menu list
+- selected item details
+- add/remove item controls
+- inventory table
+- restock controls
+- Confirmed the project still compiles after the manager UI was added
+- Next step is expanding the manager dashboard and save/load behavior
+
 ## April 14 2026
+
 - UML Use Case Diagram
 - Class Diagrams (STARTED WILL HAVE QUESTIONS)
+
+## April 21 2026
+
+- Merged the latest `main` changes into `andre/manager-architecture`, including the use case diagram files.
+- Added manager menu item editing on the manager dashboard:
+  - selecting a menu item now fills editable fields
+  - managers can update the selected item's name and base price
+  - pastry variations can also be edited
+  - successful edits save back to `data/menu.json`
+- Confirmed the project still compiles with the Maven wrapper after the manager edit changes.
+- Expanded the local manager/data foundation further:
+  - beverage size price adjustments can be edited from the manager dashboard
+  - beverage customization costs can be edited from the manager dashboard
+  - menu item ingredient usage can be edited with inventory ingredient IDs
+  - seed menu JSON now preserves size prices, customization prices, and ingredient usage
+  - inventory seed data now includes the core ingredients used by the menu
+  - pending and fulfilled order queues now load/save through `data/orders.json`
+- Reviewed teammate branch diffs before integration:
+  - `customer-flow` has useful customer service/model work, but some Java/FXML files are currently outside the Maven package structure
+  - `ameer/barista-flow` appears behind the current shared scaffold and should be updated before integration

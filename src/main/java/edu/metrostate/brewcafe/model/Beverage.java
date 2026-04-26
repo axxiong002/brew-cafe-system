@@ -19,4 +19,22 @@ public class Beverage extends MenuItem {
     public List<Customization> getCustomizations() {
         return customizations;
     }
+
+    public void addSize(SizeOption sizeOption) {
+        sizes.add(sizeOption);
+    }
+
+    public void setSizes(List<SizeOption> sizeOptions) {
+        sizes.clear();
+        sizes.addAll(sizeOptions);
+    }
+
+    public void addCustomization(Customization customization) {
+        customizations.add(customization);
+    }
+
+    public void setCustomizations(List<Customization> customizationOptions) {
+        customizations.clear();
+        customizations.addAll(customizationOptions);
+    }
 }

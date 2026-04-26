@@ -1,7 +1,9 @@
 package edu.metrostate.brewcafe.view;
 
+import edu.metrostate.brewcafe.controller.BaristaController;
 import edu.metrostate.brewcafe.model.Order;
 import edu.metrostate.brewcafe.model.OrderStatus;
+import edu.metrostate.brewcafe.service.CafeApplicationState;
 import edu.metrostate.brewcafe.service.CafeObserver;
 import edu.metrostate.brewcafe.service.OrderService;
 import javafx.application.Platform;
@@ -12,37 +14,67 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 
 public class BaristaDashboardView implements CafeObserver {
     private final BorderPane rootLayout;
+    private final CafeApplicationState applicationState;
     private final OrderService orderService;
+    private final BaristaController controller;
 
     private final ObservableList<Order> observablePendingOrders = FXCollections.observableArrayList();
     private final ObservableList<Order> observableFulfilledOrders = FXCollections.observableArrayList();
 
-    public BaristaDashboardView(BorderPane rootLayout, OrderService orderService) {
+    public BaristaDashboardView(BorderPane rootLayout, CafeApplicationState applicationState, BaristaController controller) {
         this.rootLayout = rootLayout;
-        this.orderService = orderService;
+        this.applicationState = applicationState;
+        this.orderService = applicationState.getOrderService();
+        this.controller = controller;
 
-        // Register to listen for new orders
         this.orderService.addObserver(this);
-
         refreshOrderList();
     }
 
     public Parent build() {
         BorderPane dashboard = new BorderPane();
         dashboard.setStyle("-fx-background-color: #f4f4f4;");
+        dashboard.setPadding(new Insets(20));
 
-        // Right Side: The Detail Area
+        // --- HEADER ---
+        Label titleLabel = new Label("Barista Dashboard");
+        titleLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
+
+        Button logoutButton = new Button("Log Out");
+        logoutButton.setOnAction(event -> controller.showLoginScreen());
+
+        Button homeButton = new Button("Home");
+        homeButton.setOnAction(event -> controller.returnToHome());
+
+        HBox headerActions = new HBox(10, homeButton, logoutButton);
+        headerActions.setAlignment(Pos.CENTER_RIGHT);
+
+        BorderPane header = new BorderPane();
+        header.setLeft(titleLabel);
+        header.setRight(headerActions);
+        header.setPadding(new Insets(0, 0, 15, 0));
+        dashboard.setTop(header);
+
+        // --- RIGHT SIDE: Detail Area ---
+        VBox rightPanel = new VBox(10);
+        rightPanel.setPadding(new Insets(0, 0, 0, 10));
+
+        Label detailsLabel = new Label("Order Details");
+        detailsLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
+
         VBox detailArea = new VBox(15);
         detailArea.setPadding(new Insets(20));
         detailArea.setAlignment(Pos.TOP_LEFT);
         detailArea.setStyle("-fx-background-color: white; -fx-border-color: #ddd;");
+        detailArea.getChildren().add(new Label("Select an order from the list to view its details."));
 
-        //  Left Side: Pending (Top) and Fulfilled (Bottom)
+        rightPanel.getChildren().addAll(detailsLabel, detailArea);
+        VBox.setVgrow(detailArea, Priority.ALWAYS);
+
+        // --- LEFT SIDE: Pending and Fulfilled Lists ---
         ListView<Order> pendingList = new ListView<>(observablePendingOrders);
         setupOrderListView(pendingList);
 
@@ -56,11 +88,12 @@ public class BaristaDashboardView implements CafeObserver {
         fulfilledLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
 
         VBox leftPanel = new VBox(10, pendingLabel, pendingList, fulfilledLabel, fulfilledList);
-        leftPanel.setPadding(new Insets(10));
-        leftPanel.setPrefWidth(250);
+        leftPanel.setPadding(new Insets(0, 10, 0, 0));
+        leftPanel.setPrefWidth(300);
         VBox.setVgrow(pendingList, Priority.ALWAYS);
         VBox.setVgrow(fulfilledList, Priority.ALWAYS);
 
+        // List View Listeners
         pendingList.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
                 fulfilledList.getSelectionModel().clearSelection();
@@ -75,8 +108,9 @@ public class BaristaDashboardView implements CafeObserver {
             }
         });
 
+        // --- FINAL ASSEMBLY ---
         dashboard.setLeft(leftPanel);
-        dashboard.setCenter(detailArea);
+        dashboard.setCenter(rightPanel);
 
         return dashboard;
     }
@@ -85,7 +119,6 @@ public class BaristaDashboardView implements CafeObserver {
     private void showOrderDetails(VBox detailArea, Order order, boolean showFulfillButton) {
         detailArea.getChildren().clear();
 
-        // Header Information
         Label idLabel = new Label("Order ID: " + order.getId());
         idLabel.setStyle("-fx-font-size: 26px; -fx-font-weight: bold;");
 
@@ -97,7 +130,6 @@ public class BaristaDashboardView implements CafeObserver {
 
         detailArea.getChildren().addAll(idLabel, customerLabel, statusLabel);
 
-        // Order Items List
         Label itemsHeader = new Label("Items:");
         itemsHeader.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 15 0 5 0;");
         detailArea.getChildren().add(itemsHeader);
@@ -109,77 +141,63 @@ public class BaristaDashboardView implements CafeObserver {
         } else {
             for (edu.metrostate.brewcafe.model.OrderItem item : order.getItems()) {
                 edu.metrostate.brewcafe.model.MenuItem menuItem = item.getMenuItem();
-
                 String displayName = menuItem.getName();
 
-                // If it's a pastry, attach the variation
                 if (menuItem instanceof edu.metrostate.brewcafe.model.Pastry) {
                     edu.metrostate.brewcafe.model.Pastry pastry = (edu.metrostate.brewcafe.model.Pastry) menuItem;
                     displayName = pastry.getVariation() + " " + displayName;
                 }
 
-                // Calculate the line item price (price * quantity)
                 double itemTotal = menuItem.getBasePrice() * item.getQuantity();
                 orderTotal += itemTotal;
 
-                // Format it nicely: "Example: 2x Blueberry Muffin - $6.90"
                 String itemText = String.format("  %dx %s - $%.2f", item.getQuantity(), displayName, itemTotal);
                 Label itemLabel = new Label(itemText);
                 itemLabel.setStyle("-fx-font-size: 16px;");
                 detailArea.getChildren().add(itemLabel);
             }
 
-            // Show the total price at the bottom of the list
             Label totalLabel = new Label(String.format("\nTotal: $%.2f", orderTotal));
             totalLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
             detailArea.getChildren().add(totalLabel);
         }
 
-        // Spacing before the button
         Region spacer = new Region();
         spacer.setMinHeight(20);
         detailArea.getChildren().add(spacer);
 
-        // The Action Button
         if (showFulfillButton) {
-            // Show different button depending on current status
             if (order.getStatus() == OrderStatus.PENDING) {
                 Button acceptBtn = new Button("Accept Order");
-                acceptBtn.setStyle("-fx-background-color: #6f4e37; -fx-text-fill: white; " +
-                        "-fx-font-size: 14px; -fx-padding: 8 15 8 15;");
+                acceptBtn.setStyle("-fx-background-color: #6f4e37; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 8 15 8 15;");
                 acceptBtn.setOnAction(e -> {
-                    order.setStatus(OrderStatus.IN_PROGRESS);
-                    refreshOrderList();
+                    controller.updateOrderStatus(order, OrderStatus.IN_PROGRESS);
                     showOrderDetails(detailArea, order, true);
                 });
                 detailArea.getChildren().add(acceptBtn);
 
             } else if (order.getStatus() == OrderStatus.IN_PROGRESS) {
                 Button readyBtn = new Button("Mark as Ready");
-                readyBtn.setStyle("-fx-background-color: #6f4e37; -fx-text-fill: white; " +
-                        "-fx-font-size: 14px; -fx-padding: 8 15 8 15;");
+                readyBtn.setStyle("-fx-background-color: #6f4e37; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 8 15 8 15;");
                 readyBtn.setOnAction(e -> {
-                    order.setStatus(OrderStatus.READY_FOR_PICKUP);
-                    refreshOrderList();
+                    controller.updateOrderStatus(order, OrderStatus.READY_FOR_PICKUP);
                     showOrderDetails(detailArea, order, true);
                 });
                 detailArea.getChildren().add(readyBtn);
 
             } else if (order.getStatus() == OrderStatus.READY_FOR_PICKUP) {
                 Button fulfillBtn = new Button("Complete Order");
-                fulfillBtn.setStyle("-fx-background-color: #6f4e37; -fx-text-fill: white; " +
-                        "-fx-font-size: 14px; -fx-padding: 8 15 8 15;");
+                fulfillBtn.setStyle("-fx-background-color: #6f4e37; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 8 15 8 15;");
                 fulfillBtn.setOnAction(e -> {
-                    order.setStatus(OrderStatus.FULFILLED);
-                    refreshOrderList();
+                    controller.updateOrderStatus(order, OrderStatus.FULFILLED);
                     detailArea.getChildren().clear();
+                    detailArea.getChildren().add(new Label("Select an order from the list to view its details."));
                 });
                 detailArea.getChildren().add(fulfillBtn);
             }
         }
     }
 
-    // Helper method to format how items look in the lists
     private void setupOrderListView(ListView<Order> listView) {
         listView.setCellFactory(param -> new ListCell<Order>() {
             @Override
@@ -196,24 +214,16 @@ public class BaristaDashboardView implements CafeObserver {
 
     @Override
     public void onCafeStateChanged(String eventName) {
-        if ("order-added".equals(eventName)) {
+        if ("order-added".equals(eventName) || "order-status-updated".equals(eventName) || "order-fulfilled".equals(eventName)) {
             Platform.runLater(this::refreshOrderList);
         }
     }
 
-    // Sorts the real data into the two UI lists safely
     private void refreshOrderList() {
         observablePendingOrders.clear();
         observableFulfilledOrders.clear();
 
-        for (Order order : orderService.getPendingOrders()) {
-            // ONLY completed orders go to the bottom history list
-            if (order.getStatus() == OrderStatus.FULFILLED) {
-                observableFulfilledOrders.add(order);
-            } else {
-                // PENDING, IN_PROGRESS, and READY_FOR_PICKUP all stay in the top list
-                observablePendingOrders.add(order);
-            }
-        }
+        observablePendingOrders.addAll(orderService.getPendingOrders());
+        observableFulfilledOrders.addAll(orderService.getFulfilledOrders());
     }
 }
