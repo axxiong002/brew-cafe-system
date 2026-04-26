@@ -39,7 +39,7 @@ public class BaristaDashboardView implements CafeObserver {
         dashboard.setStyle("-fx-background-color: #f4f4f4;");
         dashboard.setPadding(new Insets(20));
 
-        // --- HEADER ---
+        // Header
         Label titleLabel = new Label("Barista Dashboard");
         titleLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
 
@@ -58,7 +58,7 @@ public class BaristaDashboardView implements CafeObserver {
         header.setPadding(new Insets(0, 0, 15, 0));
         dashboard.setTop(header);
 
-        // --- RIGHT SIDE: Detail Area ---
+        // Right Side: Detail Area
         VBox rightPanel = new VBox(10);
         rightPanel.setPadding(new Insets(0, 0, 0, 10));
 
@@ -74,7 +74,7 @@ public class BaristaDashboardView implements CafeObserver {
         rightPanel.getChildren().addAll(detailsLabel, detailArea);
         VBox.setVgrow(detailArea, Priority.ALWAYS);
 
-        // --- LEFT SIDE: Pending and Fulfilled Lists ---
+        // Left Side: Pending and Fulfilled Lists
         ListView<Order> pendingList = new ListView<>(observablePendingOrders);
         setupOrderListView(pendingList);
 
@@ -108,7 +108,6 @@ public class BaristaDashboardView implements CafeObserver {
             }
         });
 
-        // --- FINAL ASSEMBLY ---
         dashboard.setLeft(leftPanel);
         dashboard.setCenter(rightPanel);
 

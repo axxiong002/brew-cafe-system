@@ -10,6 +10,7 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
+// Build barista login screen
 public class BaristaLoginView {
 
     private final BorderPane rootLayout;
