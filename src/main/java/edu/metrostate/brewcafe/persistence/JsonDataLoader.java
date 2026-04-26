@@ -183,7 +183,12 @@ public class JsonDataLoader {
             for (OrderItemDataRaw rawItem : rawOrder.items()) {
                 MenuItem menuItem = menuById.get(rawItem.menuItemId());
                 if (menuItem != null) {
-                    order.addItem(new OrderItem(menuItem, rawItem.quantity()));
+                    order.addItem(new OrderItem(
+                            menuItem,
+                            rawItem.quantity(),
+                            findSelectedSize(menuItem, rawItem.selectedSizeName()),
+                            findSelectedCustomizations(menuItem, rawItem.selectedCustomizationNames())
+                    ));
                 }
             }
             orders.add(order);
@@ -196,11 +201,39 @@ public class JsonDataLoader {
         List<OrderDataRaw> orderData = new ArrayList<>();
         for (Order order : orders) {
             List<OrderItemDataRaw> items = order.getItems().stream()
-                    .map(item -> new OrderItemDataRaw(item.getMenuItem().getId(), item.getQuantity()))
+                    .map(item -> new OrderItemDataRaw(
+                            item.getMenuItem().getId(),
+                            item.getQuantity(),
+                            item.getSelectedSize() == null ? null : item.getSelectedSize().name(),
+                            item.getSelectedCustomizations().stream()
+                                    .map(Customization::name)
+                                    .toList()
+                    ))
                     .toList();
             orderData.add(new OrderDataRaw(order.getId(), order.getCustomerName(), order.getStatus(), items));
         }
         return orderData;
+    }
+
+    private SizeOption findSelectedSize(MenuItem menuItem, String selectedSizeName) {
+        if (!(menuItem instanceof Beverage beverage) || selectedSizeName == null || selectedSizeName.isBlank()) {
+            return null;
+        }
+
+        return beverage.getSizes().stream()
+                .filter(size -> size.name().equals(selectedSizeName))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private List<Customization> findSelectedCustomizations(MenuItem menuItem, List<String> customizationNames) {
+        if (!(menuItem instanceof Beverage beverage) || customizationNames == null || customizationNames.isEmpty()) {
+            return List.of();
+        }
+
+        return beverage.getCustomizations().stream()
+                .filter(customization -> customizationNames.contains(customization.name()))
+                .toList();
     }
 
     private record UsersData(List<User> users) {
@@ -240,6 +273,11 @@ public class JsonDataLoader {
     private record OrderDataRaw(String id, String customerName, OrderStatus status, List<OrderItemDataRaw> items) {
     }
 
-    private record OrderItemDataRaw(String menuItemId, int quantity) {
+    private record OrderItemDataRaw(
+            String menuItemId,
+            int quantity,
+            String selectedSizeName,
+            List<String> selectedCustomizationNames
+    ) {
     }
 }

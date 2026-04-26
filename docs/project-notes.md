@@ -83,3 +83,15 @@ This file is the shared repo-level notes log for setup changes, progress updates
 - Reviewed teammate branch diffs before integration:
   - `customer-flow` has useful customer service/model work, but some Java/FXML files are currently outside the Maven package structure
   - `ameer/barista-flow` appears behind the current shared scaffold and should be updated before integration
+
+## April 22 2026
+
+- Started `andre/order-flow-foundation` from the updated `main` branch.
+- Added shared order-flow support for customer and barista screens:
+  - `OrderItem` now stores selected beverage size and customizations
+  - `OrderPricingService` centralizes unit, line, and order total calculations
+  - `CustomerOrderService` manages a customer's draft order before submitting it
+  - `InventoryService` can validate and consume inventory for a whole order
+  - `OrderService` exposes pending lookup and next-order FIFO helper methods
+  - order JSON persistence now keeps selected size/customization information
+- Confirmed the project compiles with `.\mvnw.cmd clean compile`.
