@@ -23,7 +23,7 @@ public class BaristaController {
                 .isPresent();
     }
 
-    // Delegates to the OrderService to physically move the data, then saves it
+    // Delegates to the OrderService to move the data, then saves it
     public void updateOrderStatus(Order order, OrderStatus newStatus) {
         if (order == null) return;
 

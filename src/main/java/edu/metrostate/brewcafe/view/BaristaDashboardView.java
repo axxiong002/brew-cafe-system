@@ -5,6 +5,7 @@ import edu.metrostate.brewcafe.model.Order;
 import edu.metrostate.brewcafe.model.OrderStatus;
 import edu.metrostate.brewcafe.service.CafeApplicationState;
 import edu.metrostate.brewcafe.service.CafeObserver;
+import edu.metrostate.brewcafe.service.OrderPricingService;
 import edu.metrostate.brewcafe.service.OrderService;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -133,7 +134,8 @@ public class BaristaDashboardView implements CafeObserver {
         itemsHeader.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 15 0 5 0;");
         detailArea.getChildren().add(itemsHeader);
 
-        double orderTotal = 0.0;
+        // Use OrderPricingService for accurate totals including size and customization costs
+        OrderPricingService pricingService = new OrderPricingService();
 
         if (order.getItems() == null || order.getItems().isEmpty()) {
             detailArea.getChildren().add(new Label("  No items found."));
@@ -142,20 +144,40 @@ public class BaristaDashboardView implements CafeObserver {
                 edu.metrostate.brewcafe.model.MenuItem menuItem = item.getMenuItem();
                 String displayName = menuItem.getName();
 
-                if (menuItem instanceof edu.metrostate.brewcafe.model.Pastry) {
-                    edu.metrostate.brewcafe.model.Pastry pastry = (edu.metrostate.brewcafe.model.Pastry) menuItem;
+                // Add pastry variation
+                if (menuItem instanceof edu.metrostate.brewcafe.model.Pastry pastry) {
                     displayName = pastry.getVariation() + " " + displayName;
                 }
 
-                double itemTotal = menuItem.getBasePrice() * item.getQuantity();
-                orderTotal += itemTotal;
+                // Add size if selected. Example: "(Large)"
+                String sizeText = "";
+                if (item.getSelectedSize() != null) {
+                    sizeText = " (" + item.getSelectedSize().name() + ")";
+                }
 
-                String itemText = String.format("  %dx %s - $%.2f", item.getQuantity(), displayName, itemTotal);
+                // Add customizations if selected. Example "+ Oat Milk, Extra Shot"
+                String customText = "";
+                if (!item.getSelectedCustomizations().isEmpty()) {
+                    customText = " + " + item.getSelectedCustomizations()
+                            .stream()
+                            .map(edu.metrostate.brewcafe.model.Customization::name)
+                            .reduce((a, b) -> a + ", " + b)
+                            .orElse("");
+                }
+
+                // Use pricingService for accurate line total
+                double lineTotal = pricingService.calculateLineTotal(item);
+
+                String itemText = String.format("  %dx %s%s%s - $%.2f",
+                        item.getQuantity(), displayName, sizeText, customText, lineTotal);
+
                 Label itemLabel = new Label(itemText);
                 itemLabel.setStyle("-fx-font-size: 16px;");
                 detailArea.getChildren().add(itemLabel);
             }
 
+            // Use pricingService for accurate order total
+            double orderTotal = pricingService.calculateOrderTotal(order);
             Label totalLabel = new Label(String.format("\nTotal: $%.2f", orderTotal));
             totalLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
             detailArea.getChildren().add(totalLabel);

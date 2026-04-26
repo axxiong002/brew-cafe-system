@@ -85,11 +85,11 @@ public class BaristaLoginView {
 
         VBox mainLayout = new VBox(30, titleLabel, errorBar, inputContainer, buttonContainer);
         mainLayout.setAlignment(Pos.CENTER);
-        mainLayout.setStyle("-fx-background-color: white;");
+        //mainLayout.setStyle("-fx-background-color: white;");
         mainLayout.setPadding(new Insets(50));
 
         BorderPane wrapper = new BorderPane();
-        wrapper.setStyle("-fx-background-color: white;");
+        //wrapper.setStyle("-fx-background-color: white;");
         wrapper.setCenter(mainLayout);
         return wrapper;
     }
