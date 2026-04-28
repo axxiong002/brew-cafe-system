@@ -66,6 +66,13 @@ mvn compile
 mvn javafx:run
 ```
 
+To build the runnable submission jar:
+
+```powershell
+.\mvnw.cmd clean package
+java -jar target\brew-cafe-system-0.1.0-runnable.jar
+```
+
 ## Team Structure
 
 - Project lead / GitHub coordinator
