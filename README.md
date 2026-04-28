@@ -34,21 +34,17 @@ We are building a Java 21+ JavaFX application for a cafe with three roles:
 
 ## Current Project Status
 
-- Maven-based JavaFX starter project is set up
-- The project compiles successfully with Maven
-- Maven wrapper files are included for easier team setup
-- Starter package layout exists for `controller`, `model`, `service`, `persistence`, and `view`
-- Role placeholder screens exist for customer, barista, and manager flows
-- Sample JSON seed files exist under `data/`
-- Early Factory Method and Observer pattern starter code has been added
-- Shared application state now loads seeded users, menu items, and inventory on startup
-- Shared `AuthService`, `MenuService`, and `InventoryService` foundations are now in place for later role-specific UI work
-- Manager-side architecture now owns the central menu and inventory service layer the other role flows will use
-- The manager button now opens a real manager login screen and first-pass dashboard instead of only a placeholder
-- The manager dashboard supports adding, editing, and removing menu items, including beverage sizes/customizations and ingredient usage
-- Manager menu and inventory changes save back to JSON
-- Pending and fulfilled order queues now have a JSON persistence foundation
-- Customer/barista order foundation includes draft orders, line-item pricing, selected sizes/customizations, inventory validation, and FIFO queue support
+- Maven-based JavaFX project is set up and builds with the Maven wrapper.
+- Package layout is split across `controller`, `model`, `service`, `persistence`, and `view`.
+- Customer, barista, and manager flows are merged into `main`.
+- Customer flow supports entering a name, selecting menu items, choosing beverage sizes/customizations, building an order, and placing it.
+- Barista flow supports login, pending order review, status updates, and completing orders into fulfilled history.
+- Manager flow supports login, menu add/edit/remove, beverage size/customization edits, ingredient usage edits, and inventory updates.
+- Shared services handle authentication, menu state, inventory checks, pricing, order queues, and application state.
+- Menu, inventory, users, pending orders, and fulfilled orders load from JSON.
+- Menu, inventory, and order changes save back to JSON.
+- Observer and Factory Method pattern structures are present.
+- Runnable jar packaging is configured for final submission.
 
 ## Build And Run
 
@@ -83,11 +79,12 @@ java -jar target\brew-cafe-system-0.1.0-runnable.jar
 
 ## Immediate Next Steps
 
-1. Invite teammates and the instructor collaborator.
-2. Finish assigning major ownership areas across the team.
-3. Create issues for design, coding, testing, diagrams, and reflection work.
-4. Build customer ordering and barista queue screens against the shared order service layer.
-5. Integrate teammate branches carefully so FXML/root-level files are moved into the Maven JavaFX package structure.
+1. Pull the latest `main` before doing more work.
+2. Finish manual testing across customer, barista, and manager workflows.
+3. Finish the UML class diagram, sequence diagrams, and remaining wireframes.
+4. Finish the design PDF and group reflection PDF.
+5. Capture GitHub Issues/Project screenshots for the final submission.
+6. Build and verify the runnable jar before submitting.
 
 ## Project Notes
 
