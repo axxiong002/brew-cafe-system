@@ -12,7 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 
-// Builds the temporary role screens so teammates can see where each workflow belongs.
+// Builds the role entry screens for the three cafe workflows.
 public final class RolePlaceholderFactory {
 
     private RolePlaceholderFactory() {
@@ -24,19 +24,22 @@ public final class RolePlaceholderFactory {
         Label titleLabel = new Label("Brew Cafe System");
         titleLabel.setStyle("-fx-font-size: 28px; -fx-font-weight: bold;");
 
-        Label subtitleLabel = new Label("Starter shell for customer, barista, and manager workflows.");
+        Label subtitleLabel = new Label("Choose a role to place orders, fulfill orders, or manage the cafe.");
         subtitleLabel.setStyle("-fx-font-size: 14px;");
 
         Button customerButton = new Button("Customer");
         customerButton.setPrefWidth(180);
+        customerButton.setPrefHeight(36);
         customerButton.setOnAction(event -> controller.showCustomerScreen());
 
         Button baristaButton = new Button("Barista");
         baristaButton.setPrefWidth(180);
+        baristaButton.setPrefHeight(36);
         baristaButton.setOnAction(event -> controller.showBaristaScreen());
 
         Button managerButton = new Button("Manager");
         managerButton.setPrefWidth(180);
+        managerButton.setPrefHeight(36);
         managerButton.setOnAction(event -> controller.showManagerScreen());
 
         VBox content = new VBox(18, titleLabel, subtitleLabel, customerButton, baristaButton, managerButton);
@@ -57,32 +60,4 @@ public final class RolePlaceholderFactory {
         return new ManagerLoginView(rootLayout, applicationState).build();
     }
 
-    private static Node createRoleScreen(
-            BorderPane rootLayout,
-            CafeApplicationState applicationState,
-            String title,
-            String summary,
-            String ownerHint
-    ) {
-        MainMenuController controller = new MainMenuController(rootLayout, applicationState);
-
-        Label titleLabel = new Label(title);
-        titleLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold;");
-
-        Label summaryLabel = new Label(summary);
-        summaryLabel.setWrapText(true);
-
-        Label ownerLabel = new Label(ownerHint);
-        ownerLabel.setWrapText(true);
-        ownerLabel.setStyle("-fx-font-style: italic;");
-
-        Button backButton = new Button("Back to Home");
-        backButton.setOnAction(event -> controller.returnToHome());
-
-        VBox content = new VBox(16, titleLabel, summaryLabel, ownerLabel, backButton);
-        content.setAlignment(Pos.CENTER);
-        content.setPadding(new Insets(40));
-        content.setMaxWidth(540);
-        return content;
-    }
 }

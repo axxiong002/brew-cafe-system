@@ -267,7 +267,7 @@ public class ManagerDashboardView {
                 new HBox(10, saveSelectedButton, removeItemButton)
         );
         menuSection.setPadding(new Insets(18));
-        menuSection.setStyle("-fx-background-color: rgba(255,255,255,0.7); -fx-background-radius: 12;");
+        menuSection.setStyle("-fx-background-color: rgba(255,255,255,0.7); -fx-background-radius: 8;");
 
         VBox inventorySection = new VBox(
                 12,
@@ -276,7 +276,7 @@ public class ManagerDashboardView {
                 new Label("Double-click a quantity cell, type the new amount, then press Enter.")
         );
         inventorySection.setPadding(new Insets(18));
-        inventorySection.setStyle("-fx-background-color: rgba(255,255,255,0.7); -fx-background-radius: 12;");
+        inventorySection.setStyle("-fx-background-color: rgba(255,255,255,0.7); -fx-background-radius: 8;");
 
         HBox content = new HBox(18, menuSection, inventorySection);
         HBox.setHgrow(menuSection, Priority.ALWAYS);

@@ -132,7 +132,7 @@ public class CustomerController {
 
         if (currentOrderOptional.isEmpty() || currentOrderOptional.get().getItems().isEmpty()) {
             currentOrderItems.clear();
-            totalLabel.setText("Total: $0.00");
+            totalLabel.setText("$0.00");
             statusLabel.setText("No active order to clear.");
             return;
         }
@@ -140,7 +140,7 @@ public class CustomerController {
         try {
             customerOrderService.clearCurrentOrder();
             currentOrderItems.clear();
-            totalLabel.setText("Total: $0.00");
+            totalLabel.setText("$0.00");
             statusLabel.setText("Order cleared.");
         } catch (IllegalStateException ex) {
             statusLabel.setText(ex.getMessage());
@@ -153,14 +153,14 @@ public class CustomerController {
         try {
             Order placedOrder = customerOrderService.placeCurrentOrder();
             currentOrderItems.clear();
-            totalLabel.setText("Total: $0.00");
+            totalLabel.setText("$0.00");
             resetInputs(customerNameField, menuListView, sizeComboBox, quantitySpinner);
             statusLabel.setText("Order placed: " + placedOrder.getId());
         } catch (IllegalStateException ex) {
             statusLabel.setText(ex.getMessage());
         } catch (IOException ex) {
             currentOrderItems.clear();
-            totalLabel.setText("Total: $0.00");
+            totalLabel.setText("$0.00");
             resetInputs(customerNameField, menuListView, sizeComboBox, quantitySpinner);
             statusLabel.setText("Order placed, but saving failed.");
         }
@@ -202,12 +202,12 @@ public class CustomerController {
     private void refreshTotal(Label totalLabel) {
         Optional<Order> currentOrderOptional = customerOrderService.getCurrentOrder();
         if (currentOrderOptional.isEmpty()) {
-            totalLabel.setText("Total: $0.00");
+            totalLabel.setText("$0.00");
             return;
         }
 
         double total = orderPricingService.calculateOrderTotal(currentOrderOptional.get());
-        totalLabel.setText("Total: $" + String.format("%.2f", total));
+        totalLabel.setText("$" + String.format("%.2f", total));
     }
 
     private void resetInputs(TextField customerNameField, ListView<MenuItem> menuListView,
