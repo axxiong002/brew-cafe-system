@@ -114,6 +114,9 @@ public class CustomerController {
             if (!applicationState.getInventoryService().canFulfillOrder(updateOrder)) {
                 customerOrderService.removeItemFromCurrentOrder(addedItem);
                 statusLabel.setText("That item cannot be added because ingredients are insufficient");
+                refreshCurrentOrderItems(currentOrderItems);
+                refreshTotal(totalLabel);
+                return;
             }
 
             refreshCurrentOrderItems(currentOrderItems);
