@@ -93,6 +93,83 @@ After pushing, open a pull request on GitHub from your branch into `main`.
 - Capture GitHub Project evidence
 - Final document proofreading
 
+## Current Documentation Handoff
+
+The app is now mostly in final integration shape, so the remaining work is mainly diagrams, writeup, screenshots, and final testing notes. These are the pieces that still need to be finished or checked before submission.
+
+### What We Already Have
+
+- JavaFX app with customer, barista, and manager flows
+- JSON files for menu, inventory, users, and orders
+- JSON save/load for menu, inventory, pending orders, and fulfilled orders
+- Observer structure in `CafeObserver`, `CafeSubject`, and `AbstractCafeSubject`
+- Factory Method structure in `MenuItemFactory`
+- Maven wrapper and runnable jar packaging
+- Use case diagram files under `docs/diagrams`
+- GitHub issues and PR history showing work across the project
+
+### What Riss Can Focus On
+
+- Update or finish the UML class diagram so it matches the current code
+- Finish wireframes for:
+  - customer ordering screen
+  - barista login and fulfillment screen
+  - manager login and dashboard screen
+  - main role-selection screen if needed
+- Create at least three sequence diagrams. Good choices are:
+  - customer places an order
+  - barista changes status and completes an order
+  - manager restocks or edits inventory
+- Help write the design PDF sections for MVC, layers, patterns, and class responsibilities
+- Help collect screenshots of the app, GitHub issues, and the project board for the final documents
+
+### Current Code Map For Diagrams
+
+- Models:
+  - `MenuItem`, `Beverage`, `Pastry`
+  - `Order`, `OrderItem`, `OrderStatus`
+  - `Ingredient`, `IngredientUsage`
+  - `User`, `UserRole`
+- Services:
+  - `CafeApplicationState`
+  - `AuthService`
+  - `MenuService`
+  - `InventoryService`
+  - `OrderService`
+  - `CustomerOrderService`
+  - `OrderPricingService`
+  - `MenuItemFactory`
+- Controllers:
+  - `MainMenuController`
+  - `CustomerController`
+  - `BaristaController`
+  - `ManagerController`
+- Views:
+  - `MainMenuView`
+  - `CustomerDashboardView`
+  - `BaristaLoginView`
+  - `BaristaDashboardView`
+  - `ManagerLoginView`
+  - `ManagerDashboardView`
+- Persistence:
+  - `JsonDataLoader`
+
+### Simple MVC / Layer Explanation
+
+- View classes build the JavaFX screens and display data.
+- Controller classes handle button actions and screen navigation.
+- Service classes hold the business rules, like pricing, inventory checks, authentication, and order queues.
+- Model classes hold the main cafe data.
+- `JsonDataLoader` handles reading and writing external JSON files.
+
+### Pattern Notes For The Writeup
+
+- Observer: `OrderService`, `InventoryService`, and `MenuService` extend `AbstractCafeSubject`, and views can observe changes so screens can refresh when shared state changes.
+- Factory Method: `MenuItemFactory` centralizes creation of beverages and pastries instead of scattering `new Beverage(...)` and `new Pastry(...)` through the UI.
+- Inheritance: `Beverage` and `Pastry` extend `MenuItem`.
+- Composition: `Order` contains `OrderItem` objects; `MenuItem` contains `IngredientUsage` objects; `Beverage` contains sizes and customizations.
+- SRP/cohesion: pricing is in `OrderPricingService`, inventory is in `InventoryService`, authentication is in `AuthService`, and JSON persistence is in `JsonDataLoader`.
+
 ## Suggested Owners
 
 - Lead: GitHub Projects, weekly status, integration

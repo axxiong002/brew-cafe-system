@@ -95,3 +95,44 @@ This file is the shared repo-level notes log for setup changes, progress updates
   - `OrderService` exposes pending lookup and next-order FIFO helper methods
   - order JSON persistence now keeps selected size/customization information
 - Confirmed the project compiles with `.\mvnw.cmd clean compile`.
+
+## April 28 2026
+
+- Merged the main feature work into `main`:
+  - manager dashboard and persistence foundation
+  - shared order-flow foundation
+  - barista login/dashboard/order status flow
+  - customer ordering screen
+- Closed the implementation issues that are now covered by the merged app.
+- Fixed a customer-order message issue where an out-of-stock item could show the wrong success text.
+- Added runnable jar packaging. The submission jar is built with:
+
+```powershell
+.\mvnw.cmd clean package
+java -jar target\brew-cafe-system-0.1.0-runnable.jar
+```
+
+- Added one saved sample order to the JSON data so we have a simple persisted order/history example.
+- Did a small UI polish pass on the home screen, barista login screen, manager dashboard panels, and customer total display.
+
+Current code state:
+
+- Customer can enter a name, pick menu items, choose beverage sizes/customizations, add items to an order, clear the order, and place it.
+- Inventory is checked before items are kept in the order, and inventory is deducted when an order is placed.
+- Barista can log in, view pending orders, move orders through status updates, and complete them into fulfilled history.
+- Manager can log in, add/edit/remove menu items, edit beverage sizes/customizations/ingredient usage, and update inventory.
+- Menu, inventory, users, pending orders, and fulfilled orders are loaded from JSON. Menu, inventory, and orders save back to JSON.
+
+Design/documentation handoff:
+
+- The use case diagram is already in `docs/diagrams`.
+- The remaining design work should be based on the actual current code, especially:
+  - `model`: `MenuItem`, `Beverage`, `Pastry`, `Order`, `OrderItem`, `Ingredient`, `IngredientUsage`, `User`
+  - `service`: `CafeApplicationState`, `AuthService`, `MenuService`, `InventoryService`, `OrderService`, `CustomerOrderService`, `OrderPricingService`, `MenuItemFactory`
+  - `controller`: `CustomerController`, `BaristaController`, `ManagerController`, `MainMenuController`
+  - `view`: `CustomerDashboardView`, `BaristaLoginView`, `BaristaDashboardView`, `ManagerLoginView`, `ManagerDashboardView`, `MainMenuView`
+- Good sequence diagram choices:
+  - customer places an order
+  - barista updates/completes an order
+  - manager edits inventory or restocks an ingredient
+- The design PDF should explain MVC/layers using the package structure: views/controllers for UI, services for business logic, models for app data, and `JsonDataLoader` for persistence.
