@@ -48,6 +48,7 @@ We are building a Java 21+ JavaFX application for a cafe with three roles:
 - The manager dashboard supports adding, editing, and removing menu items, including beverage sizes/customizations and ingredient usage
 - Manager menu and inventory changes save back to JSON
 - Pending and fulfilled order queues now have a JSON persistence foundation
+- Customer/barista order foundation includes draft orders, line-item pricing, selected sizes/customizations, inventory validation, and FIFO queue support
 
 ## Build And Run
 
@@ -78,7 +79,7 @@ mvn javafx:run
 1. Invite teammates and the instructor collaborator.
 2. Finish assigning major ownership areas across the team.
 3. Create issues for design, coding, testing, diagrams, and reflection work.
-4. Build customer ordering and barista queue screens against the shared service layer.
+4. Build customer ordering and barista queue screens against the shared order service layer.
 5. Integrate teammate branches carefully so FXML/root-level files are moved into the Maven JavaFX package structure.
 
 ## Project Notes

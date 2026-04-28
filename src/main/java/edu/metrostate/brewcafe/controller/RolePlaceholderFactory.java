@@ -1,6 +1,7 @@
 package edu.metrostate.brewcafe.controller;
 
 import edu.metrostate.brewcafe.service.CafeApplicationState;
+import edu.metrostate.brewcafe.view.BaristaLoginView;
 import edu.metrostate.brewcafe.view.CustomerDashboardView;
 import edu.metrostate.brewcafe.view.ManagerLoginView;
 import javafx.geometry.Insets;
@@ -13,6 +14,7 @@ import javafx.scene.layout.VBox;
 
 // Builds the temporary role screens so teammates can see where each workflow belongs.
 public final class RolePlaceholderFactory {
+
     private RolePlaceholderFactory() {
     }
 
@@ -48,13 +50,7 @@ public final class RolePlaceholderFactory {
     }
 
     public static Node createBaristaPlaceholder(BorderPane rootLayout, CafeApplicationState applicationState) {
-        return createRoleScreen(
-                rootLayout,
-                applicationState,
-                "Barista Placeholder",
-                "This is where the FIFO order queue, status updates, and fulfillment flow will go.",
-                "Likely owner: barista workflow"
-        );
+        return new BaristaLoginView(rootLayout, applicationState).build();
     }
 
     public static Node createManagerPlaceholder(BorderPane rootLayout, CafeApplicationState applicationState) {
