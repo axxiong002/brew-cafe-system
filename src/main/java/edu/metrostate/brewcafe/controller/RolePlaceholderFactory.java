@@ -2,6 +2,7 @@ package edu.metrostate.brewcafe.controller;
 
 import edu.metrostate.brewcafe.service.CafeApplicationState;
 import edu.metrostate.brewcafe.view.BaristaLoginView;
+import edu.metrostate.brewcafe.view.CustomerDashboardView;
 import edu.metrostate.brewcafe.view.ManagerLoginView;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -45,13 +46,7 @@ public final class RolePlaceholderFactory {
     }
 
     public static Node createCustomerPlaceholder(BorderPane rootLayout, CafeApplicationState applicationState) {
-        return createRoleScreen(
-                rootLayout,
-                applicationState,
-                "Customer Placeholder",
-                "This is where customer ordering, item selection, and order building will go.",
-                "Likely owner: customer UI / ordering workflow"
-        );
+        return new CustomerDashboardView(rootLayout, applicationState).build();
     }
 
     public static Node createBaristaPlaceholder(BorderPane rootLayout, CafeApplicationState applicationState) {

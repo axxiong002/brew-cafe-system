@@ -1,17 +1,17 @@
 package edu.metrostate.brewcafe.service;
 
-import edu.metrostate.brewcafe.model.Ingredient;
-import edu.metrostate.brewcafe.model.IngredientUsage;
-import edu.metrostate.brewcafe.model.MenuItem;
-import edu.metrostate.brewcafe.model.Order;
-import edu.metrostate.brewcafe.model.OrderItem;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import edu.metrostate.brewcafe.model.Ingredient;
+import edu.metrostate.brewcafe.model.IngredientUsage;
+import edu.metrostate.brewcafe.model.MenuItem;
+import edu.metrostate.brewcafe.model.Order;
+import edu.metrostate.brewcafe.model.OrderItem;
 
 // Owns stock visibility, restocking, and availability checks for manager-controlled inventory.
 public class InventoryService extends AbstractCafeSubject {
