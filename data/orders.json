@@ -1,4 +1,14 @@
 {
   "pendingOrders" : [ ],
-  "fulfilledOrders" : [ ]
+  "fulfilledOrders" : [ {
+    "id" : "ORDER-001",
+    "customerName" : "Andrew",
+    "status" : "FULFILLED",
+    "items" : [ {
+      "menuItemId" : "bev-latte",
+      "quantity" : 1,
+      "selectedSizeName" : "Small",
+      "selectedCustomizationNames" : [ "Extra Shot" ]
+    } ]
+  } ]
 }

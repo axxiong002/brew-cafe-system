@@ -2,12 +2,12 @@
   "ingredients" : [ {
     "id" : "ing-coffee-beans",
     "name" : "Coffee Beans",
-    "quantity" : 5220.0,
+    "quantity" : 5202.0,
     "unit" : "grams"
   }, {
     "id" : "ing-milk",
     "name" : "Milk",
-    "quantity" : 8000.0,
+    "quantity" : 7820.0,
     "unit" : "ml"
   }, {
     "id" : "ing-sugar",
