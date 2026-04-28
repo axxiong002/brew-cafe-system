@@ -1,5 +1,10 @@
 package edu.metrostate.brewcafe.controller;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Optional;
+
 import edu.metrostate.brewcafe.model.Beverage;
 import edu.metrostate.brewcafe.model.Customization;
 import edu.metrostate.brewcafe.model.MenuItem;
@@ -8,6 +13,7 @@ import edu.metrostate.brewcafe.model.OrderItem;
 import edu.metrostate.brewcafe.model.SizeOption;
 import edu.metrostate.brewcafe.service.CafeApplicationState;
 import edu.metrostate.brewcafe.service.CustomerOrderService;
+import edu.metrostate.brewcafe.service.OrderPricingService;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -16,27 +22,18 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-
 // Handle customer screen actions and also connects UI to applicationState and customerOrderService
 public class CustomerController {
     private final BorderPane rootLayout;
     private final CafeApplicationState applicationState;
     private final CustomerOrderService customerOrderService;
-
+    private final OrderPricingService orderPricingService;
+    
     public CustomerController(BorderPane rootLayout, CafeApplicationState applicationState) {
         this.rootLayout = rootLayout;
         this.applicationState = applicationState;
-
-        int startingOrderNumber = applicationState.getOrderService().getPendingOrders().size()
-                        			+ applicationState.getOrderService().getFulfilledOrders().size()
-                        			+ 1;
-
-        this.customerOrderService = new CustomerOrderService(applicationState.getOrderService(),
-        														applicationState.getInventoryService(),
-        														startingOrderNumber);
+        this.customerOrderService = new CustomerOrderService(applicationState);
+        this.orderPricingService = new OrderPricingService();
     }
 
     public void returnToHome() {
@@ -86,17 +83,19 @@ public class CustomerController {
             return;
         }
 
-        Order currentOrder = customerOrderService.getCurrentOrder();
+        Optional<Order> currentOrderOptional = customerOrderService.getCurrentOrder();
 
-        if (currentOrder == null) {
+        if (currentOrderOptional.isEmpty()) {
             try {
                 customerOrderService.startNewOrder(customerName.trim());
-                currentOrder = customerOrderService.getCurrentOrder();
+                currentOrderOptional = customerOrderService.getCurrentOrder();
             } catch (IllegalArgumentException ex) {
                 statusLabel.setText(ex.getMessage());
                 return;
             }
         }
+
+        Order currentOrder = currentOrderOptional.orElseThrow();
 
         if (!currentOrder.getCustomerName().equals(customerName.trim())) {
             statusLabel.setText("Clear or place the current order before changing the customer name.");
@@ -108,10 +107,15 @@ public class CustomerController {
             return;
         }
 
-        OrderItem orderItem = new OrderItem(selectedItem, quantity, selectedSize, new ArrayList<>(selectedCustomizations));
-
         try {
-            customerOrderService.addItemToCurrentOrder(orderItem);
+            OrderItem addedItem = customerOrderService.addItemToCurrentOrder(selectedItem, quantity, selectedSize, new ArrayList<>(selectedCustomizations));
+
+            Order updateOrder = customerOrderService.getCurrentOrder().orElseThrow();
+            if (!applicationState.getInventoryService().canFulfillOrder(updateOrder)) {
+                customerOrderService.removeItemFromCurrentOrder(addedItem);
+                statusLabel.setText("That item cannot be added because ingredients are insufficient");
+            }
+
             refreshCurrentOrderItems(currentOrderItems);
             refreshTotal(totalLabel);
             statusLabel.setText("Item added to the order.");
@@ -121,9 +125,9 @@ public class CustomerController {
     }
 
     public void clearCurrentOrder(ObservableList<OrderItem> currentOrderItems, Label totalLabel, Label statusLabel) {
-        Order currentOrder = customerOrderService.getCurrentOrder();
+        Optional<Order> currentOrderOptional = customerOrderService.getCurrentOrder();
 
-        if (currentOrder == null || currentOrder.getItems().isEmpty()) {
+        if (currentOrderOptional.isEmpty() || currentOrderOptional.get().getItems().isEmpty()) {
             currentOrderItems.clear();
             totalLabel.setText("Total: $0.00");
             statusLabel.setText("No active order to clear.");
@@ -145,25 +149,17 @@ public class CustomerController {
     								ComboBox<SizeOption> sizeComboBox, Spinner<Integer> quantitySpinner) {
         try {
             Order placedOrder = customerOrderService.placeCurrentOrder();
-
-            try {
-                applicationState.saveInventoryData();
-                applicationState.saveOrderData();
-            } catch (IOException exception) {
-                String orderId = placedOrder.getId();
-                currentOrderItems.clear();
-                totalLabel.setText("Total: $0.00");
-                resetInputs(customerNameField, menuListView, sizeComboBox, quantitySpinner);
-                statusLabel.setText("Order placed: " + orderId + " (save failed)");
-                return;
-            }
-
             currentOrderItems.clear();
             totalLabel.setText("Total: $0.00");
             resetInputs(customerNameField, menuListView, sizeComboBox, quantitySpinner);
             statusLabel.setText("Order placed: " + placedOrder.getId());
         } catch (IllegalStateException ex) {
             statusLabel.setText(ex.getMessage());
+        } catch (IOException ex) {
+            currentOrderItems.clear();
+            totalLabel.setText("Total: $0.00");
+            resetInputs(customerNameField, menuListView, sizeComboBox, quantitySpinner);
+            statusLabel.setText("Order placed, but saving failed.");
         }
     }
 
@@ -187,57 +183,37 @@ public class CustomerController {
         }
 
         text.append(" x").append(item.getQuantity());
-        text.append(" - $").append(String.format("%.2f", calculateLineTotal(item)));
+        text.append(" - $").append(String.format("%.2f", orderPricingService.calculateLineTotal(item)));
         return text.toString();
     }
 
     private void refreshCurrentOrderItems(ObservableList<OrderItem> currentOrderItems) {
-        Order currentOrder = customerOrderService.getCurrentOrder();
-        if (currentOrder == null) {
+        Optional<Order> currentOrderOptional = customerOrderService.getCurrentOrder();
+        if (currentOrderOptional.isEmpty()) {
             currentOrderItems.clear();
             return;
         }
-        currentOrderItems.setAll(currentOrder.getItems());
+        currentOrderItems.setAll(currentOrderOptional.get().getItems());
     }
 
     private void refreshTotal(Label totalLabel) {
-        Order currentOrder = customerOrderService.getCurrentOrder();
-        if (currentOrder == null) {
+        Optional<Order> currentOrderOptional = customerOrderService.getCurrentOrder();
+        if (currentOrderOptional.isEmpty()) {
             totalLabel.setText("Total: $0.00");
             return;
         }
 
-        double total = 0.0;
-        for (OrderItem item : currentOrder.getItems()) {
-            total += calculateLineTotal(item);
-        }
+        double total = orderPricingService.calculateOrderTotal(currentOrderOptional.get());
         totalLabel.setText("Total: $" + String.format("%.2f", total));
-    }
-
-    private double calculateLineTotal(OrderItem item) {
-        double unitPrice = item.getMenuItem().getBasePrice();
-
-        if (item.getSelectedSize() != null) {
-            unitPrice += item.getSelectedSize().priceAdjustment();
-        }
-
-        for (Customization customization : item.getSelectedCustomizations()) {
-            unitPrice += customization.extraCost();
-        }
-
-        return unitPrice * item.getQuantity();
     }
 
     private void resetInputs(TextField customerNameField, ListView<MenuItem> menuListView,
             				ComboBox<SizeOption> sizeComboBox, Spinner<Integer> quantitySpinner) {
         customerNameField.clear();
-
         menuListView.getSelectionModel().clearSelection();
-
         sizeComboBox.getItems().clear();
         sizeComboBox.getSelectionModel().clearSelection();
         sizeComboBox.setDisable(true);
-
         quantitySpinner.getValueFactory().setValue(1);
     }
 }

@@ -1,6 +1,7 @@
 package edu.metrostate.brewcafe.controller;
 
 import edu.metrostate.brewcafe.service.CafeApplicationState;
+import edu.metrostate.brewcafe.view.CustomerDashboardView;
 import edu.metrostate.brewcafe.view.ManagerLoginView;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;

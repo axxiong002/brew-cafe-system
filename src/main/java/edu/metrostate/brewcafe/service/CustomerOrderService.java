@@ -1,34 +1,27 @@
 package edu.metrostate.brewcafe.service;
 
+import edu.metrostate.brewcafe.model.Customization;
+import edu.metrostate.brewcafe.model.MenuItem;
 import edu.metrostate.brewcafe.model.Order;
 import edu.metrostate.brewcafe.model.OrderItem;
 import edu.metrostate.brewcafe.model.OrderStatus;
+import edu.metrostate.brewcafe.model.SizeOption;
 
-// Manages the customer workflow, such as starting order, adding items, clearing, and placing it
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+
+// Owns the customer's draft order before it is submitted to the shared barista queue.
 public class CustomerOrderService {
-    private final OrderService orderService;
-    private final InventoryService inventoryService;
+    private final CafeApplicationState applicationState;
     private Order currentOrder;
     private int nextOrderNumber;
 
-    public CustomerOrderService(OrderService orderService, InventoryService inventoryService) {
-        this(orderService, inventoryService, 1);
-    }
-
-    public CustomerOrderService(OrderService orderService, InventoryService inventoryService, int startingOrderNumber) {
-        if (orderService == null) {
-            throw new IllegalArgumentException("OrderService is required.");
-        }
-        if (inventoryService == null) {
-            throw new IllegalArgumentException("InventoryService is required.");
-        }
-        if (startingOrderNumber < 1) {
-            throw new IllegalArgumentException("Starting order number must be at least 1.");
-        }
-
-        this.orderService = orderService;
-        this.inventoryService = inventoryService;
-        this.nextOrderNumber = startingOrderNumber;
+    public CustomerOrderService(CafeApplicationState applicationState) {
+        this.applicationState = applicationState;
+        nextOrderNumber = applicationState.getOrderService().getPendingOrders().size()
+                + applicationState.getOrderService().getFulfilledOrders().size()
+                + 1;
     }
 
     public void startNewOrder(String customerName) {
@@ -39,73 +32,75 @@ public class CustomerOrderService {
         currentOrder = new Order(generateOrderId(), customerName.trim(), OrderStatus.PENDING);
     }
 
-    public Order getCurrentOrder() {
-        return currentOrder;
+    public Optional<Order> getCurrentOrder() {
+        return Optional.ofNullable(currentOrder);
     }
 
-    public void addItemToCurrentOrder(OrderItem orderItem) {
-        ensureCurrentOrderExists();
+    public OrderItem addItemToCurrentOrder(
+            MenuItem menuItem,
+            int quantity,
+            SizeOption selectedSize,
+            List<Customization> selectedCustomizations
+    ) {
+        ensureActiveOrder();
+        validateOrderItem(menuItem, quantity);
 
-        if (orderItem == null) {
-            throw new IllegalArgumentException("Order item cannot be null.");
-        }
-
+        OrderItem orderItem = new OrderItem(menuItem, quantity, selectedSize, selectedCustomizations);
         currentOrder.addItem(orderItem);
-
-        if (!inventoryService.isAvailable(currentOrder)) {
-            currentOrder.removeItem(orderItem);
-            throw new IllegalStateException("That item cannot be added because ingredients are insufficient.");
-        }
+        return orderItem;
     }
 
     public void removeItemFromCurrentOrder(OrderItem orderItem) {
-        ensureCurrentOrderExists();
-
-        if (orderItem != null) {
-            currentOrder.removeItem(orderItem);
-        }
+        ensureActiveOrder();
+        currentOrder.removeItem(orderItem);
     }
 
     public void clearCurrentOrder() {
-        ensureCurrentOrderExists();
+        ensureActiveOrder();
         currentOrder.clearItems();
     }
 
     public boolean canPlaceCurrentOrder() {
-        return currentOrder != null && !currentOrder.getItems().isEmpty() && inventoryService.isAvailable(currentOrder);
+        return currentOrder != null
+                && !currentOrder.getItems().isEmpty()
+                && applicationState.getInventoryService().canFulfillOrder(currentOrder);
     }
 
-    public Order placeCurrentOrder() {
-        ensureCurrentOrderExists();
-
+    public Order placeCurrentOrder() throws IOException {
+        ensureActiveOrder();
         if (currentOrder.getItems().isEmpty()) {
             throw new IllegalStateException("Cannot place an empty order.");
         }
 
-        if (!inventoryService.isAvailable(currentOrder)) {
-            throw new IllegalStateException("This order cannot be placed because ingredients are insufficient.");
-        }
-
-        boolean consumed = inventoryService.consumeForOrder(currentOrder);
-        if (!consumed) {
-            throw new IllegalStateException("This order cannot be placed because ingredients are insufficient.");
+        if (!applicationState.getInventoryService().consumeForOrder(currentOrder)) {
+            throw new IllegalStateException("Cannot place order because inventory is too low.");
         }
 
         Order placedOrder = currentOrder;
-        orderService.addOrder(placedOrder);
+        applicationState.getOrderService().addOrder(placedOrder);
+        applicationState.saveInventoryData();
+        applicationState.saveOrderData();
         currentOrder = null;
         return placedOrder;
     }
 
-    private void ensureCurrentOrderExists() {
+    private void ensureActiveOrder() {
         if (currentOrder == null) {
-            throw new IllegalStateException("No current order. Start a new order first.");
+            throw new IllegalStateException("Start a customer order first.");
+        }
+    }
+
+    private void validateOrderItem(MenuItem menuItem, int quantity) {
+        if (menuItem == null) {
+            throw new IllegalArgumentException("Menu item is required.");
+        }
+
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be greater than 0.");
         }
     }
 
     private String generateOrderId() {
-        String orderId = "ORD-" + String.format("%03d", nextOrderNumber);
-        nextOrderNumber++;
-        return orderId;
+        return "ORDER-" + String.format("%03d", nextOrderNumber++);
     }
 }

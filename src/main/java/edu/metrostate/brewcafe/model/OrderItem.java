@@ -1,27 +1,24 @@
 package edu.metrostate.brewcafe.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class OrderItem {
-	private final MenuItem menuItem;
+    private final MenuItem menuItem;
     private int quantity;
     private SizeOption selectedSize;
-    private List<Customization> selectedCustomizations;
+    private final List<Customization> selectedCustomizations = new ArrayList<>();
 
-    public OrderItem(MenuItem menuItem, int quantity,
-    		SizeOption selectedSize, List<Customization> selectedCustomization) {
+    public OrderItem(MenuItem menuItem, int quantity) {
+        this(menuItem, quantity, null, List.of());
+    }
+
+    public OrderItem(MenuItem menuItem, int quantity, SizeOption selectedSize, List<Customization> selectedCustomizations) {
         this.menuItem = menuItem;
         this.quantity = quantity;
         this.selectedSize = selectedSize;
-        this.selectedCustomizations = new ArrayList<>();
-        
-        if (selectedCustomization != null)
-        	this.selectedCustomizations.addAll(selectedCustomization);
-    }
-    
-    public OrderItem(MenuItem menuItem, int quantity) {
-    	this(menuItem, quantity, null, new ArrayList<>());
+        setSelectedCustomizations(selectedCustomizations);
     }
 
     public MenuItem getMenuItem() {
@@ -35,22 +32,23 @@ public class OrderItem {
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
-    
+
     public SizeOption getSelectedSize() {
-    	return selectedSize;
+        return selectedSize;
     }
-    
+
     public void setSelectedSize(SizeOption selectedSize) {
-    	this.selectedSize = selectedSize;
+        this.selectedSize = selectedSize;
     }
-    
+
     public List<Customization> getSelectedCustomizations() {
-    	return selectedCustomizations;
+        return Collections.unmodifiableList(selectedCustomizations);
     }
-    
-    public void setSelectedCustomizations(List<Customization> newCustomizations) {
-    	selectedCustomizations.clear();
-    	if (newCustomizations != null)
-    		selectedCustomizations.addAll(newCustomizations);
+
+    public void setSelectedCustomizations(List<Customization> customizations) {
+        selectedCustomizations.clear();
+        if (customizations != null) {
+            selectedCustomizations.addAll(customizations);
+        }
     }
 }

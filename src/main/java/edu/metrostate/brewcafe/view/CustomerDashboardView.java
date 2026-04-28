@@ -1,5 +1,8 @@
 package edu.metrostate.brewcafe.view;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.metrostate.brewcafe.controller.CustomerController;
 import edu.metrostate.brewcafe.model.Beverage;
 import edu.metrostate.brewcafe.model.Customization;
@@ -29,9 +32,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class CustomerDashboardView implements CafeObserver{
 
